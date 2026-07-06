@@ -1,7 +1,7 @@
 gsap.registerPlugin(ScrollTrigger);
 
 const container = document.querySelector('.container');
-const sections = gsap.utils.toArray('.container section');
+const sections = gsap.utils.toArray('.container div');
 const text = gsap.utils.toArray('.anim');
 
 let scrollTween = gsap.to(sections, {
