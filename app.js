@@ -31,3 +31,13 @@ sections.forEach((section) => {
     }
   });
 });
+
+document.getElementById("signin").addEventListener("click", () => {
+  localStorage.setItem("mode", "login");
+  window.location.href = "auth/auth.html";
+});
+
+document.getElementById("create").addEventListener("click", () => {
+  localStorage.setItem("mode", "signup");
+  window.location.href = "auth/auth.html";
+});
