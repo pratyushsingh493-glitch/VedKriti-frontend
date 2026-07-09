@@ -1,6 +1,7 @@
-import { domain } from "./config.js";
+import { domain } from "../config.js";
 
-const submit = document.querySelector("button");
+const submit = document.querySelector(".verifyButton");
+const resend = document.querySelector(".resendBtn");
 
 submit.addEventListener("click",async(e)=>{
     e.preventDefault();
@@ -21,7 +22,28 @@ submit.addEventListener("click",async(e)=>{
     const status = response.status;
     const data = await response.json();
     if(status==200){
-        globalThis.location.href = "home.html";
+        if(localStorage.getItem("role")==="patient") globalThis.location.href = "../home/home.html";
+        else globalThis.location.href = "../details/details.html";
+    }else{
+        document.getElementById("err").innerText = data.message;
+    }
+})
+
+resend.addEventListener("click",async(e)=>{
+    e.preventDefault();
+    const response = await fetch(`${domain}/verify-user`,{
+        method : "POST",
+        headers : {
+            "Content-Type": "application/json"
+        },
+        body : JSON.stringify({
+            "email" : localStorage.getItem("email")
+        })
+    });
+    const status = response.status;
+    const data = await response.json();
+    if(status==200){
+        alert(data.message);
     }else{
         document.getElementById("err").innerText = data.message;
     }

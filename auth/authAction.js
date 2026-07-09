@@ -1,6 +1,8 @@
 const submit = document.getElementById("button");
 const mode = localStorage.getItem("mode");
-import { domain } from "./config.js";
+localStorage.clear();
+import { domain } from "../config.js";
+console.log("Domain =", domain);
 
 if (mode === "signup"){
     document.getElementById("login").checked = true;
@@ -13,6 +15,7 @@ submit.addEventListener("click",async(e)=>{
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
     const email = document.getElementById("email").value;
+    const role = document.getElementById("role").value;
     let response;
 
     if(document.getElementById("signin").checked) response = await fetch(`${domain}/signin-user`,{
@@ -23,7 +26,8 @@ submit.addEventListener("click",async(e)=>{
         body : JSON.stringify({
             "username" : username,
             "password" : password,
-            "email" : email
+            "email" : email,
+            "role" : role
         })
     });
 
@@ -35,15 +39,18 @@ submit.addEventListener("click",async(e)=>{
         body : JSON.stringify({
             "username" : username,
             "password" : password,
-            "email" : email
+            "email" : email,
+            "role" : role
         })
     })
     const data = await response.json();
     console.dir(response);
     if(response.status == 201){
-        globalThis.location.href = "otp.html";
+        globalThis.location.href = "../otp/otp.html";
+        localStorage.setItem("email", email);
+        localStorage.setItem("role",role);
     }else if(response.status == 200){
-        globalThis.location.href = "home.html";
+        globalThis.location.href = "../home/home.html";
     }else{
         document.getElementById("err").innerText = data.message;
     }
