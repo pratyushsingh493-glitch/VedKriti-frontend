@@ -3,9 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="detailStyle.css">
     <title>Document</title>
 </head>
 <body>
-    
+    <div class="tabs-container">
+        <ul aria-labelledby="tabs-title">
+            <li><a id="tab1" href="#location">Practice Location</a></li>
+            <li><a id="tab2" href="#education">Education</a></li>
+            <li><a id="tab3" href="#operational">Operational Details</a></li>
+            <li><a id="tab4" href="#about">About</a></li>
+            <li><a id="tab5" href="#records">Records</a></li>
+        </ul>
+    </div>
+
+    <div class="tabs__panel flow">
+        <div id="location" aria-labelledby="tab-1">
+            <div class="card">
+                <form>
+                    <div>
+                        <label for="city">City : <input type="text" id="city" name="city" placeholder="Enter City" required></label>
+                        <label for="state">State : <input type="text" id="state" name="state" placeholder="Enter State" required></label>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <label for="country">Country : <input type="text" id="country" name="country" placeholder="Enter Country" required></label>
+                        <label for="address">Address : <input type="text" id="address" name="address" placeholder="Enter Address" required></label> 
+                    </div>
+                    <br>
+                    <div>
+                        <label for="PIN">PIN : <input type="number" id="PIN" name="PIN" placeholder="Enter PIN" requPIN></label>
+                        <label for="facility">Facility Name : <input class="right" type="text" id="facility" name="facility" placeholder="Enter Facility Name" required></label>
+                    </div>
+                    <br>
+                    <label for="fee">Consultation Fee : <input type="number" id="fee" name="fee" placeholder="Enter Consultation Fee" required></label>
+                    <br>
+                    <br>
+                    <input id="btnLoc" type="submit">
+                </form>
+            </div>
+        </div>
+        <div id="education" aria-labelledby="tab-2">
+            <div class="card">
+                <form>
+                    <div><label for="institute">Institute : <input type="text" id="institute" name="institute" placeholder="Enter Institute Name" required></label></div>
+                    <br>
+                    <div>
+                        <label for="deg_type">Degree Type : <input type="text" id="deg_type" name="deg_type" placeholder="Enter Degree Type" required></label>
+                        <label for="deg_name">Degree Name : <input type="text" id="deg_name" name="deg_name" placeholder="Enter Degree Name" required></label>
+                    </div>
+                    <br>
+                    <div>
+                        <label for="feildOfStudy">Feild of Study : <input type="text" id="feildOfStudy" name="feildOfStudy" placeholder="Enter Feild of Study" required></label>
+                        <label for="s1">Specialization 1 : <input type="text" id="s1" name="s1" placeholder="Enter Specialization 1" requPIN></label>
+                    </div>
+                    <br>
+                    <div>
+                        <label for="s2">Specialization 2 : <input type="text" id="s2" name="s2" placeholder="Enter Specialization 2" required></label>
+                        <label for="s3">Specialization 3 : <input type="text" id="s3" name="s3" placeholder="Enter Specialization 3" required></label>
+                    </div>
+                    <br>
+                    <input id="btnEdu" type="submit">
+                </form>
+            </div>
+        </div>
+        <div id="operational" aria-labelledby="tab-3">
+            <div class="card">
+                <form>
+                    <div>
+                        <label for="m_cap">
+                            Morning Capacity :
+                            <input type="number" id="m_cap" name="m_cap" placeholder="Patient count in Morning slot" required>
+                        </label>
+
+                        <label for="a_cap">
+                            Afternoon Capacity :
+                            <input type="number" id="a_cap" name="a_cap" placeholder="Patient count in Afternoon slot" required>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div>
+                        <label for="e_cap">
+                            Evening Capacity :
+                            <input type="number" id="e_cap" name="e_cap" placeholder="Patient count in Evening slot" required>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div>
+                        <fieldset>
+                            <legend>Select Holidays</legend>
+
+                            <label><input type="checkbox" name="holiday" value="Monday"> Monday</label>
+                            <label><input type="checkbox" name="holiday" value="Tuesday"> Tuesday</label>
+                            <label><input type="checkbox" name="holiday" value="Wednesday"> Wednesday</label>
+                            <label><input type="checkbox" name="holiday" value="Thursday"> Thursday</label>
+                            <label><input type="checkbox" name="holiday" value="Friday"> Friday</label>
+                            <label><input type="checkbox" name="holiday" value="Saturday"> Saturday</label>
+                            <label><input type="checkbox" name="holiday" value="Sunday"> Sunday</label>
+                        </fieldset>
+                    </div>
+
+                    <br>
+
+                    <input id="btnOps" type="submit">
+                </form>
+            </div>
+        </div>
+        <div id="about" aria-labelledby="tab-4">
+            <div class="card">
+                <form>
+                    <div>
+                        <img src="../media/profile.jpg" alt="Profile">
+
+                        <label for="pfp" id="pfpl">
+                            Profile Picture
+                            <input
+                                type="file"
+                                id="pfp"
+                                name="pfp"
+                                accept="image/jpeg, image/png, image/jpg">
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div>
+                        <label for="designation">
+                            Designation / Title :
+                            <input
+                                type="text"
+                                id="designation"
+                                name="designation"
+                                placeholder="Enter Designation"
+                                required>
+                        </label>
+                    </div>
+
+                    <br>
+                    <label for="desc">
+                        About Yourself :
+                        <br>
+                        <textarea
+                            id="desc"
+                            name="desc"
+                            rows="5"
+                            placeholder="Tell patients about your experience, expertise, achievements, and consultation approach..."
+                            required></textarea>
+                    </label>
+
+                    <br>
+
+                    <input id="btnAbout" type="submit">
+                </form>
+            </div>
+        </div>
+        <div id="records" aria-labelledby="tab5">
+            <div class="card">
+                <form id="recordsForm">
+                    <div>
+                        <label for="govtId">
+                            Government ID :
+                            <input
+                                type="file"
+                                id="govtId"
+                                name="govtId"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                required>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div>
+                        <label for="medicalCertificate">
+                            Medical Certificate :
+                            <input
+                                type="file"
+                                id="medicalCertificate"
+                                name="medicalCertificate"
+                                accept=".pdf,.doc,.docx"
+                                required>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <input id="btnRecords" type="submit" value="Finish Registration">
+                </form>
+            </div>
+        </div>
+    <script type="module" src="detailsAction.js"></script>
 </body>
 </html>
