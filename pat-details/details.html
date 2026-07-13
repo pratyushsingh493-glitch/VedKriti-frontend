@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="detailStyle.css">
+    <title>Document</title>
+</head>
+<body>
+    <div id="about" aria-labelledby="tab-4">
+        <div class="card">
+            <form>
+                <div>
+                    <img src="../media/pat-profile.jpg" alt="Profile">
+
+                    <label for="pfp" id="pfpl">
+                        Profile Picture
+                        <input
+                            type="file"
+                            id="pfp"
+                            name="pfp"
+                            accept="image/jpeg, image/png, image/jpg">
+                    </label>
+                </div>
+
+                <br>
+
+                <div>
+                    <label for="gender">Gender :
+                        <select id="gender" name="gender" required>
+                            <option value="" disabled selected>Select Gender</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </label>
+                    <label for="dob">DOB : 
+                        <input type="date" id="dob" name="dob">
+                    </label>
+                </div>
+                <br>
+
+                <div>
+                    <label for="phone">Phone Number : 
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="Enter Phone Number"
+                            pattern="[0-9]{10}"
+                            maxlength="10"
+                            required
+                        >
+                    </label>
+                </div>
+
+                <br>
+                <label for="address">
+                    Address :
+                    <br>
+                    <textarea
+                        id="address"
+                        name="address"
+                        rows="5"
+                        placeholder="Enter your Address"
+                        required></textarea>
+                </label>
+
+                <br>
+
+                <input id="btnAbout" type="submit">
+            </form>
+        </div>
+    </div>
+    <script type="module" src="detailsAction.js"></script>
+</body>
+</html>

@@ -22,8 +22,8 @@ submit.addEventListener("click",async(e)=>{
     const status = response.status;
     const data = await response.json();
     if(status==200){
-        if(localStorage.getItem("role")==="patient") globalThis.location.href = "../home/home.html";
-        else globalThis.location.href = "../details/details.html";
+        if(localStorage.getItem("role")==="patient") globalThis.location.href = "../pat-details/details.html";
+        else globalThis.location.href = "../doc-details/details.html";
     }else{
         document.getElementById("err").innerText = data.message;
     }
