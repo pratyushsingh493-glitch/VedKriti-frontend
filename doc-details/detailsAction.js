@@ -6,6 +6,8 @@ const tabPanels = document.querySelectorAll(".tabs__panel > div");
 
 const profilePic = document.querySelector("#about img");
 const inputFile = document.querySelector("#pfp");
+const form = document.querySelector("#experiance form");
+let exp = 1;
 
 tabPanels.forEach((panel, index) => {
     if (index !== 0) {
@@ -84,7 +86,8 @@ document.getElementById("btnLoc").addEventListener("click", async (e) => {
             {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify({
                     city,
@@ -137,7 +140,8 @@ document.getElementById("btnEdu").addEventListener("click", async (e) => {
             {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify({
                     institute,
@@ -162,6 +166,80 @@ document.getElementById("btnEdu").addEventListener("click", async (e) => {
         showError(error.message);
     }
 });
+
+document.getElementById("add").addEventListener("click",(e)=>{
+    e.preventDefault();
+    exp++;
+    form.insertAdjacentHTML("afterbegin", `
+        <span id="exp_${exp}">
+            <div>
+                <label for="exp_facility_${exp}">Facility Name : <input type="text" id="exp_facility_${exp}" name="exp_facility_${exp}" placeholder="Enter Facility Name" required></label>
+                <label for="exp_designation_${exp}">Designation : <input type="text" id="exp_designation_${exp}" name="exp_designation_${exp}" placeholder="Enter Designation" required></label>
+            </div>
+            <br>
+            <div>
+                <label for="start_${exp}">Start Date : <input type="date" id="start_${exp}" name="start_${exp}" required></label>
+                <label for="end_${exp}">End Date : <input type="date" id="end_${exp}" name="end_${exp}" required></label>
+            </div>
+            <br>
+            <button type="button" class="delBtn" id="delete_${exp}">Delete Experiance</button>
+            <br>
+            <br>
+        </span>
+    `);
+    document.getElementById(`delete_${exp}`).addEventListener("click",(e)=>{
+        e.preventDefault();
+        const id = e.currentTarget.id;
+        const xp = Number(id.replace("delete_", ""));
+        document.getElementById(`exp_${xp}`).remove();
+        console.log(`removed button with id = exp_${xp}`)
+    })
+})
+
+document.getElementById("btnExp").addEventListener("click",async(e)=>{
+    e.preventDefault();
+
+    const form = e.target.closest("form");
+
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    let experiences = [...form.querySelectorAll('span[id^="exp_"]')].map((block) => {
+        const number = block.id.replace("exp_", "");
+
+        return {
+            facilityName: document.getElementById(`exp_facility_${number}`).value,
+            designation: document.getElementById(`exp_designation_${number}`).value,
+            startDate: document.getElementById(`start_${number}`).value,
+            endDate: document.getElementById(`end_${number}`).value
+        };
+    });
+
+    let experiance = {
+        facilityName: document.getElementById(`exp_facility_1`).value,
+        designation: document.getElementById(`exp_designation_1`).value,
+        startDate: document.getElementById(`start_1`).value,
+        endDate: document.getElementById(`end_1`).value
+    }
+
+    experiences.push(experiance);
+
+    console.dir(experiences);
+
+    const response = await fetch(`${domain}/save-experience`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({ experiences })
+    });
+
+    const data = await response.json();
+    console.log(data);
+})
 
 document.getElementById("btnOps").addEventListener("click", async (e) => {
     e.preventDefault();
@@ -201,7 +279,8 @@ document.getElementById("btnOps").addEventListener("click", async (e) => {
             {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify({
                     morningCapacity,
@@ -255,6 +334,9 @@ document.getElementById("btnAbout").addEventListener("click", async (e) => {
             `${domain}/set-about`,
             {
                 method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                },
                 body: formData
             }
         );
@@ -302,6 +384,9 @@ document.getElementById("btnRecords").addEventListener("click", async (e) => {
             `${domain}/set-documents`,
             {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                },
                 body: formData
             }
         );

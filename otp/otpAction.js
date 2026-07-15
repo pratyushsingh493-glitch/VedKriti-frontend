@@ -13,7 +13,8 @@ submit.addEventListener("click",async(e)=>{
     const response = await fetch(`${domain}/verify-user`,{
         method : "POST",
         headers : {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`
         },
         body : JSON.stringify({
             "otp" : otp
@@ -34,7 +35,8 @@ resend.addEventListener("click",async(e)=>{
     const response = await fetch(`${domain}/verify-user`,{
         method : "POST",
         headers : {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`
         },
         body : JSON.stringify({
             "email" : localStorage.getItem("email")

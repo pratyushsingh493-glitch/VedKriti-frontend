@@ -1,5 +1,3 @@
-// const { platform } = require("node:os")
-
 const APP_ID = "7ff6328ae61e4a3ea3676b6e1b3172c8"
 const TOKEN = "007eJxTYJiWtEnz/zqOCZvXml+3XKexWNbn4QKjh4XCxzw5tnELuHgqMJinpZkZG1kkppoZppokGqcmGpuZmyWZpRomGRuaGyVbrCsMy2oIZGR4cVmclZEBAkF8FobcxMw8BgYA+eYeOg=="
 const CHANEL = "main"
@@ -18,7 +16,7 @@ let joinAndDisplayLocalStream = async()=>{
     localTracks = await AgoraRTC.createMicrophoneAndCameraTracks()
     let player = `<div class="video-container" id="user-container-${UID}">
                         <div class="video-player" id="user-${UID}"></div>
-                </div>`
+                  </div>`
     document.getElementById('video-stream').insertAdjacentHTML('beforeend',player)
     localTracks[1].play(`user-${UID}`)
     await client.publish([localTracks[0],localTracks[1]])

@@ -11,9 +11,10 @@
         <ul aria-labelledby="tabs-title">
             <li><a id="tab1" href="#location">Practice Location</a></li>
             <li><a id="tab2" href="#education">Education</a></li>
-            <li><a id="tab3" href="#operational">Operational Details</a></li>
-            <li><a id="tab4" href="#about">About</a></li>
-            <li><a id="tab5" href="#records">Records</a></li>
+            <li><a id="tab3" href="#experiance">Experiance</a></li>
+            <li><a id="tab4" href="#operational">Operational Details</a></li>
+            <li><a id="tab5" href="#about">About</a></li>
+            <li><a id="tab6" href="#records">Records</a></li>
         </ul>
     </div>
 
@@ -67,7 +68,27 @@
                 </form>
             </div>
         </div>
-        <div id="operational" aria-labelledby="tab-3">
+        <div id="experiance" aria-labelledby="tab-3">
+            <div class="card">
+                <form>
+                    <div>
+                        <label for="exp_facility_1">Facility Name : <input type="text" id="exp_facility_1" name="exp_facility_1" placeholder="Enter Facility Name" required></label>
+                        <label for="exp_designation_1">Designation : <input type="text" id="exp_designation_1" name="exp_designation_1" placeholder="Enter Designation" required></label>
+                    </div>
+                    <br>
+                    <div>
+                        <label for="start_1">Start Date : <input type="date" id="start_1" name="start_1" required></label>
+                        <label for="end_1">End Date : <input type="date" id="end_1" name="end_1" required></label>
+                    </div>
+                    <br>
+                    <div>
+                        <input id="btnExp" type="submit">
+                        <button id="add">Add Experiance</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="operational" aria-labelledby="tab-4">
             <div class="card">
                 <form>
                     <div>
@@ -161,7 +182,7 @@
                 </form>
             </div>
         </div>
-        <div id="records" aria-labelledby="tab5">
+        <div id="records" aria-labelledby="tab6">
             <div class="card">
                 <form id="recordsForm">
                     <div>

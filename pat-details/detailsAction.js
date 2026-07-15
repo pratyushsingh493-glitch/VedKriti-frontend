@@ -58,6 +58,9 @@ document.getElementById("btnAbout").addEventListener("click", async (e) => {
             `${domain}/set-about`,
             {
                 method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                },
                 body: formData
             }
         );
