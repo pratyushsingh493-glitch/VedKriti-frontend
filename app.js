@@ -32,12 +32,12 @@ sections.forEach((section) => {
   });
 });
 
-document.getElementById("signin").addEventListener("click", () => {
-  localStorage.setItem("mode", "login");
+document.getElementById("login").addEventListener("click", () => {
+  localStorage.setItem("mode", "signin");
   window.location.href = "auth/auth.html";
 });
 
 document.getElementById("create").addEventListener("click", () => {
-  localStorage.setItem("mode", "signup");
+  localStorage.setItem("mode", "create");
   window.location.href = "auth/auth.html";
 });

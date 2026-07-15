@@ -15,7 +15,8 @@ inputFile.addEventListener("change", () => {
 
 const getStoredUser = () => {
     return {
-        email: localStorage.getItem("email"),
+        name: localStorage.getItem("name"),
+        userId: localStorage.getItem("userId"),
         role: localStorage.getItem("role"),
         token: localStorage.getItem("token")
     };

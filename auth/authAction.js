@@ -4,11 +4,13 @@ localStorage.clear();
 import { domain } from "../config.js";
 console.log("Domain =", domain);
 
-if (mode === "signup"){
-    document.getElementById("login").checked = true;
+if (mode === "create"){
+    document.getElementById("create").checked = true;
 }else{
-    document.getElementById("signin").checked = true;
+    document.getElementById("login").checked = true;
 }
+
+localStorage.clear();
 
 submit.addEventListener("click",async(e)=>{
     e.preventDefault();
@@ -18,7 +20,7 @@ submit.addEventListener("click",async(e)=>{
     const role = document.getElementById("role").value;
     let response;
 
-    if(document.getElementById("signin").checked) response = await fetch(`${domain}/signin-user`,{
+    if(document.getElementById("create").checked) response = await fetch(`${domain}/signin-user`,{
         method : "POST" ,
         headers : {
             "Content-Type": "application/json"
@@ -31,7 +33,7 @@ submit.addEventListener("click",async(e)=>{
         })
     });
 
-    else if((document.getElementById("login").checked)) response = await fetch(`${domain}/login-user`,{
+    response = await fetch(`${domain}/login-user`,{
         method : "POST" ,
         headers : {
             "Content-Type": "application/json"
@@ -45,13 +47,14 @@ submit.addEventListener("click",async(e)=>{
     })
     const data = await response.json();
     console.dir(response);
-    if(response.status == 201){
+
+    if (response.status === 200 || response.status === 201) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.userId);
+        localStorage.setItem("role", data.role);
+        localStorage.setItem("name", data.name);
         globalThis.location.href = "../otp/otp.html";
-        localStorage.setItem("email", email);
-        localStorage.setItem("role",role);
-    }else if(response.status == 200){
-        globalThis.location.href = "../home/home.html";
-    }else{
+    } else {
         document.getElementById("err").innerText = data.message;
     }
 });

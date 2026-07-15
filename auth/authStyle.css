@@ -122,53 +122,63 @@ p{
     text-align: center;
 }
 
-.toggle{
-    position:relative;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    width:250px;
-    background:white;
-    border-radius:16px;
-    padding:6px;
-    font-family:sans-serif;
+.toggle {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 250px;
+    padding: 6px;
+    overflow: hidden;
+    font-family: sans-serif;
+    background: white;
+    border-radius: 16px;
 }
 
-.toggle input{
-    display:none;
+.toggle input {
+    display: none;
 }
 
-.toggle label{
-    z-index:2;
-    text-align:center;
-    padding:12px 0;
-    cursor:pointer;
-    font-size:20px;
-    font-weight:600;
-    user-select:none;
+.toggle label {
+    z-index: 2;
+    padding: 12px 0;
+    color: #606060;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s ease;
 }
 
-.slider{
-    position:absolute;
-    top:6px;
-    left:6px;
-    width:calc(50% - 6px);
-    height:calc(100% - 12px);
-    background:blanchedalmond;
-    border-radius:12px;
-    box-shadow:0 4px 10px rgba(0,0,0,.2);
-    transition:.3s ease;
+.slider {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: calc(50% - 6px);
+    height: calc(100% - 12px);
+    background: blanchedalmond;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
 }
 
-#login:checked ~ .slider{
-    transform:translateX(100%);
+/* Login is selected: slider stays on the left */
+#login:checked ~ .slider {
+    transform: translateX(0);
+}
+
+/* Create is selected: slider moves to the right */
+#create:checked ~ .slider {
+    transform: translateX(100%);
+}
+
+#login:checked + label,
+#create:checked + label {
+    color: #222;
 }
 
 #choice{
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-select {
-    height: 30px;
 }
