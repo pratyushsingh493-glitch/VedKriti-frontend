@@ -1,5 +1,5 @@
 const APP_ID = "7ff6328ae61e4a3ea3676b6e1b3172c8"
-const TOKEN = "007eJxTYJiWtEnz/zqOCZvXml+3XKexWNbn4QKjh4XCxzw5tnELuHgqMJinpZkZG1kkppoZppokGqcmGpuZmyWZpRomGRuaGyVbrCsMy2oIZGR4cVmclZEBAkF8FobcxMw8BgYA+eYeOg=="
+const TOKEN = "007eJxTYLDJOLq7yDzQfnEex93V96/PnnJtc7y5qMiaJWE8q0+GhRYpMJinpZkZG1kkppoZppokGqcmGpuZmyWZpRomGRuaGyVbXDgantUQyMgQ+vswMyMDBIL4LAy5iZl5DAwAXvwgMA=="
 const CHANEL = "main"
 
 const client = AgoraRTC.createClient({mode:'rtc',codec:'vp8'})
@@ -30,7 +30,7 @@ let joinStream = async()=>{
         document.getElementById('stream-controls').style.display = 'flex';
     } catch (error) {
         console.error("Could not join stream:", error);
-        alert("Camera or microphone could not be started. Check Console.");
+        alert("Couldn't Join Stream! Try again Later");
     }
 }
 

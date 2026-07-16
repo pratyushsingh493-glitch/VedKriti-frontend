@@ -1,0 +1,275 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    min-height: 92px;
+    padding: 10px 4%;
+    background-color: #fbf4be;
+}
+
+main {
+    padding-left: 30px;
+    padding-right: 30px;
+    /* height: 100vh; */
+}
+
+img {
+    width: 150px;
+    height: auto;
+    flex-shrink: 0;
+}
+
+header .tabs-container {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 12px;
+    margin-left: 40px;
+}
+
+header .tabs-container div {
+    width: auto;
+    height: auto;
+    text-align: center;
+}
+
+header .tabs-container a {
+    display: block;
+    padding: 12px 16px;
+    color: #17333d;
+    font-weight: bold;
+    text-decoration: none;
+    white-space: nowrap;
+    border-radius: 8px;
+}
+
+header .tabs-container a:hover {
+    color: white;
+    background-color: #176b87;
+}
+
+footer{
+    background-color: #83BBEF;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+footer div{
+    width: 100%;
+    text-align: center;
+}
+
+#filter{
+    margin: 20px;
+    width: 300px;
+}
+
+input{
+    height: 30px;
+}
+
+#find{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#searchResults{
+    width: 800px;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+    border-radius:30px;
+    box-shadow:
+        -10px -10px 20px rgba(255,255,255,0.8),
+        10px 10px 20px rgba(163,177,198,0.5);
+}
+
+select{
+    height: 30px;
+}
+
+#search{
+    height: 30px;
+    width: 100%;
+}
+
+.tabs_panel{
+    display: flex;
+    justify-content: center;
+}
+
+.card{
+    margin: 20px;
+    box-shadow:
+        0 4px  8px rgba(0,0,0,.06),
+        0 12px 24px rgba(0,0,0,.08);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    overflow: hidden;
+    text-align: center;
+    animation: appear linear;
+    animation-timeline: view();
+    animation-range: entry 0% cover 40%;
+}
+
+
+.card img{
+    width: 100px;
+    height: auto;
+    margin: 10px;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+.card p{
+    text-align: left;
+}
+
+.card h1{
+    width: 100%;
+}
+
+.carousel{
+    width: 100%;
+    overflow-x: auto;
+    margin: 3em auto;
+    display: flex;
+    gap: 1em;
+    scroll-behavior: smooth;
+    anchor-name: --carousel;
+    scroll-snap-type: x mandatory;
+    scroll-marker-group: after;
+}
+
+.carousel::scroll-marker-group{
+    display: flex;
+    justify-content: center;
+    gap: .5em;
+}
+
+.date::scroll-marker{
+    content: '';
+    height: 1em;
+    width: 1em;
+    background-color: aqua;
+    border-radius: 50%;
+}
+
+.date::scroll-marker:target-current{
+    background-color: #176b87;
+}
+
+.carousel::-webkit-scrollbar{
+    display: none;
+}
+
+.carousel::scroll-button(right), .carousel::scroll-button(left){
+    content: "\2192";
+    border: none;
+    background-color: orange;
+    font-size: 3rem;
+    color: green;
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    padding-bottom: .2em;
+    position: fixed;
+    position-anchor: --carousel;
+    position-area: right center;
+    translate: -50%;
+}
+
+.carousel::scroll-button(right):disabled, .carousel::scroll-button(left):disabled {
+    opacity: 0.5;
+    cursor: auto;
+}
+
+.carousel::scroll-button(left){
+    content: "\2190";
+    translate: 50%;
+    position-area: left center;
+}
+
+.date{
+    scroll-snap-align: start;
+    flex: 0 0 30em;
+    aspect-ratio: 5 / 3;
+    height: 12em;
+    background-color: red;
+    padding: 1em;
+    border-radius: .5em;
+    text-align: center;
+    align-content: center;
+}
+
+.details{
+    display: flex;
+    flex-direction: column;
+    align-items: self-start;
+    width: 80%;
+    height: 100%;
+}
+
+.price{
+    margin: 10px;
+}
+
+@keyframes appear {
+    from{
+        opacity: 0;
+        scale: 0.4;
+    }
+    to{
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+@media(max-width: 500px){
+    .date{
+        flex: 0 0 100%;
+    }
+}
+
+@media (max-width: 700px) {
+    header {
+        align-items: flex-start;
+        padding: 10px 24px;
+    }
+
+    #logo {
+        width: 80px;
+    }
+
+    header .tabs-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        justify-content: stretch;
+        gap: 4px;
+        margin-left: 14px;
+    }
+
+    header .tabs-container a {
+        padding: 8px 6px;
+        font-size: 0.75rem;
+        white-space: normal;
+    }
+}
