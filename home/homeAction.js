@@ -7,48 +7,94 @@ const showError = (message) => {
 
 const displayDoctor = (doctor) => {
     const find = document.getElementById("find");
-    find.insertAdjacentHTML("beforeend",`<div class="carousel"></div>`);
-    doctor.availablity.forEach((avl)=>{
-        document.querySelector(".carousel").insertAdjacentHTML("beforeend",`
-            <div class="date" id="${avl.date}">
+    find.insertAdjacentHTML("beforeend", `<div class="carousel"></div>`);
+    const carousel = find.lastElementChild;
+
+    doctor.availablity.forEach((avl) => {
+        let mAvl = Math.abs(avl.morningCapacity - avl.morningBookings);
+        let aAvl = Math.abs(avl.afternoonCapacity - avl.afternoonBookings);
+        let eAvl = Math.abs(avl.eveningCapacity - avl.eveningBookings);
+
+        let m = (avl.morningCapacity - avl.morningBookings > 0)?"AVL":"WL";
+        let a = (avl.afternoonCapacity - avl.afternoonBookings > 0)?"AVL":"WL";
+        let e = (avl.eveningCapacity - avl.eveningBookings > 0)?"AVL":"WL";
+
+        carousel.insertAdjacentHTML("beforeend", `
+            <div class="date">
                 <h3>${avl.date}</h3>
-                <button class="MORNING">Morning ${avl.morningCapacity - avl.morningBookings} slots available</button>
-                <button class="AFTERNOON">Afternoon ${avl.afternoonCapacity - avl.afternoonBookings} slots available</button>
-                <button class="EVENING">Evening ${avl.eveningCapacity - avl.eveningBookings} slots available</button>
+
+                <button class="MORNING">
+                    Morning ${mAvl} slots ${m}
+                </button>
+
+                <button class="AFTERNOON">
+                    Afternoon ${aAvl} slots ${a}
+                </button>
+
+                <button class="EVENING">
+                    Evening ${eAvl} slots ${e}
+                </button>
             </div>
-        `)
-        document.querySelectorAll(`#${avl.date} button`).forEach((button)=>{
-            const shift = button.className;
-            const patID = localStorage.getItem("userID");
-            const date = avl.date;
-            try {
-                const response = await fetch(
-                    `${domain}/api/book-doctor`,
-                    {
+        `);
+
+        const dateElement = carousel.lastElementChild;
+
+        dateElement.querySelectorAll("button").forEach((button) => {
+            button.addEventListener("click", async () => {
+                const shift = button.className;
+                const patID = localStorage.getItem("userID");
+                const date = avl.date;
+                const docID = doctor.docID;
+
+                try {
+                    const response = await fetch(`${domain}/api/book-doctor`, {
                         method: "POST",
                         headers: {
-                            Authorization: `Bearer ${localStorage.getItem("token")}`
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            "Content-Type": "application/json"
                         },
-                        body: {
+                        body: JSON.stringify({
                             patID,
+                            docID,
                             date,
                             shift
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert("Booking successful!");
+
+                        const updatedResponse = await fetch(
+                            `${domain}/api/fetch-doctor?id=${encodeURIComponent(doctor.docID)}`,
+                            {
+                                method: "GET",
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                                }
+                            }
+                        );
+
+                        const updatedDoctor = await updatedResponse.json();
+
+                        if (updatedResponse.ok) {
+                            document.getElementById("find").innerHTML = "";
+                            displayDoctor(updatedDoctor);
+                        } else {
+                            showError(
+                                updatedDoctor.message ||
+                                "Booking completed, but updated details could not be loaded"
+                            );
                         }
                     }
-                );
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    alert("Booking Successful!")
-                } else {
-                    showError(data.message || "Unable to Book The slot");
+                } catch (error) {
+                    showError(error.message);
                 }
-            } catch (error) {
-                showError(error.message);
-            }
-        })
+            });
+        });
     });
+
     find.insertAdjacentHTML("beforeend",`
         <div class="card" id="${doctor.docID}">
             <div>
@@ -77,7 +123,7 @@ const displayDoctor = (doctor) => {
     `);
     find.insertAdjacentHTML("beforeend",`<div class="timeline"></div>`)
     let idx = 0;
-    doctor.experiance.forEach((exp)=>{
+    doctor.experience.forEach((exp)=>{
         const label = ((idx%2==0)?"left":"right");
         idx++;
         document.querySelector(".timeline").insertAdjacentHTML("afterbegin",`
@@ -92,7 +138,7 @@ const displayDoctor = (doctor) => {
             </div>
         `)
     });
-    doctor.patients.forEach((patient)=>{
+    (doctor.patients ?? []).forEach((patient)=>{
         find.insertAdjacentHTML("beforeend",`
             <div class="card" id="${patient.patID}">
                 <div>
@@ -110,14 +156,20 @@ const displayDoctor = (doctor) => {
         for(let i=0;i<5;i++){
             let c = "n";
             if(i<patient.rating) c = "y";
-            document.querySelector(`#${patient.patID} .star`).insertAdjacentHTML("beforeend",`<img src="../media/${c}star.png">`)
+            document
+                .getElementById(patient.patID)
+                .querySelector(".star")
+                .insertAdjacentHTML(
+                    "beforeend",
+                    `<img src="../media/${c}star.png" alt="Star">`
+                );
         }
     })
 }
 
 const addResults = (details) => {
     const search = document.getElementById("searchResults");
-    search.insertAdjacentHTML("afterbegin",`
+    search.insertAdjacentHTML("beforeend",`
         <div class="card" id="${details.docID}">
             <div>
                 <img src="${details.photo}" alt="Profile">
@@ -222,3 +274,116 @@ document.getElementById("search").addEventListener("click",async(e)=>{
         showError(error.message);
     }
 })
+
+try{
+    const response = await fetch(`${domain}/get-bokings`,{
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
+    })
+
+    const data = await response.json();
+
+    document.getElementById("bookings").innerHTML = "";
+    data.forEach((booking)=>{
+        document.getElementById("bookings").insertAdjacentHTML("beforeend",`
+            <div class="card" id="x">
+                <div>
+                    <img src="../media/pat-profile.jpg" alt="Profile">
+                </div>
+                <div class="details">
+                    <h1>${booking.doctor.name}</h1>
+                    <br>
+                    <b>${booking.doctor.degreeType} - ${booking.doctor.degreeName} - ${booking.doctor.fieldOfStudy}</b>
+                    <b>${booking.doctor.institute}i</b>
+                    <b>${booking.doctor.specialization1}, ${booking.doctor.specialization2}, ${booking.doctor.specialization3}</b>
+                    <br>
+                    <b>${booking.doctor.country}, ${booking.doctor.state}, ${booking.doctor.city}</b>
+                    <p>${booking.doctor.facilityName}</p>
+                    <br>
+                    <p>${booking.slot}</p>
+                    <p>${booking.token}</p>
+                    <p>${booking.status}</p>
+                    <p>${booking.date}</p>
+                    <p>${booking.rating}</p>
+                    <p>${booking.feedback}</p>
+                    <p>${booking.consultationType}</p>
+                </div>
+            </div>
+        `)
+    })
+}catch(error){
+    showError(error.message);
+}
+
+try{
+    const response = await fetch(`${domain}/get-bokings`,{
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
+    })
+
+    const data = await response.json();
+
+    document.getElementById("consultations").innerHTML = "";
+    data.forEach((booking)=>{
+        document.getElementById("consultations").insertAdjacentHTML("beforeend",`
+            <div class="card" id="${booking.doctor.docID}">
+                <div>
+                    <img src="../media/pat-profile.jpg" alt="Profile">
+                </div>
+                <div class="details">
+                    <h1>${booking.doctor.name}</h1>
+                    <br>
+                    <b>${booking.doctor.degreeType} - ${booking.doctor.degreeName} - ${booking.doctor.fieldOfStudy}</b>
+                    <b>${booking.doctor.institute}i</b>
+                    <b>${booking.doctor.specialization1}, ${booking.doctor.specialization2}, ${booking.doctor.specialization3}</b>
+                    <br>
+                    <b>${booking.doctor.country}, ${booking.doctor.state}, ${booking.doctor.city}</b>
+                    <p>${booking.doctor.facilityName}</p>
+                    <br>
+                    <p>${booking.slot}</p>
+                    <p>${booking.token}</p>
+                    <p>${booking.status}</p>
+                    <p>${booking.date}</p>
+                    <p class="type">${booking.consultationType}</p>
+                </div>
+            </div>
+        `)
+
+        if(booking.consultationType === "Online"){
+            document.querySelector("#consultations #${booking.doctor.docID} .type").insertAdjacentElement("afterend",`<button>Consult</button>`)
+            document.querySelector("#consultations #${booking.doctor.docID} button").addEventListener("click",()=>{
+                globalThis.location.href = "../conference/index.html";
+            })
+        }
+    })
+}catch(error){
+    showError(error.message);
+}
+
+try{
+    const response = await fetch(`${domain}/get-reports`,{
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
+    })
+
+    const data = await response.json();
+
+    document.getElementById("consultations").innerHTML = "";
+
+    data.forEach((report)=>{
+        document.getElementById("reports").insertAdjacentHTML("beforeend",`
+            <a href="${report.fileUrl}" download="${report.title}">
+                Download
+            </a>
+        `)
+    })
+
+}catch(error){
+    showError(error.message);
+}

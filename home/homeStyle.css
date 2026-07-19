@@ -326,6 +326,16 @@ select{
     height: 100%;
 }
 
+#reports .card{
+    width: 80vw;
+    height: 100vh;
+}
+
+#reports .card img{
+    border-radius: 0%;
+    height: 100%;
+}
+
 .price{
     margin: 10px;
 }
