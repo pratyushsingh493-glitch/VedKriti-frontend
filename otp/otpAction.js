@@ -17,7 +17,8 @@ submit.addEventListener("click",async(e)=>{
             Authorization: `Bearer ${localStorage.getItem("token")}`
         },
         body : JSON.stringify({
-            "otp" : otp
+            "otp" : otp,
+            "email" : localStorage.getItem("email")
         })
     });
     const status = response.status;
@@ -32,7 +33,7 @@ submit.addEventListener("click",async(e)=>{
 
 resend.addEventListener("click",async(e)=>{
     e.preventDefault();
-    const response = await fetch(`${domain}/verify-user`,{
+    const response = await fetch(`${domain}/api/auth/resend-otp`,{
         method : "POST",
         headers : {
             "Content-Type": "application/json",

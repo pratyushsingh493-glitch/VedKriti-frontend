@@ -1,5 +1,38 @@
 import { domain } from "../config.js";
 
+const tabContainer = document.querySelector(".tabs-container");
+const tabPanels = document.querySelectorAll(".tabs_panel > div");
+
+tabPanels.forEach((panel, index) => {
+    if (index !== 0) {
+        panel.setAttribute("hidden", "");
+    }
+});
+
+tabContainer.addEventListener("click", (e) => {
+    const clickedTab = e.target.closest("a");
+
+    if (!clickedTab || !tabContainer.contains(clickedTab)) {
+        return;
+    }
+
+    e.preventDefault();
+
+    const activePanel = document.querySelector(
+        clickedTab.getAttribute("href")
+    );
+
+    if (!activePanel) {
+        return;
+    }
+
+    tabPanels.forEach((panel) => {
+        panel.setAttribute("hidden", "");
+    });
+
+    activePanel.removeAttribute("hidden");
+});
+
 const showError = (message) => {
     console.error(message);
     alert(message);

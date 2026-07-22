@@ -9,11 +9,19 @@ const inputFile = document.querySelector("#pfp");
 const form = document.querySelector("#experiance form");
 let exp = 1;
 
-tabPanels.forEach((panel, index) => {
-    if (index !== 0) {
-        panel.setAttribute("hidden", "");
-    }
-});
+function showPanel(activePanel) {
+    tabPanels.forEach((panel) => {
+        panel.hidden = panel !== activePanel;
+    });
+
+    activePanel.dispatchEvent(
+        new CustomEvent("panelactive", {
+            bubbles: true
+        })
+    );
+}
+
+showPanel(tabPanels[0]);
 
 tabContainer.addEventListener("click", (e) => {
     const clickedTab = e.target.closest("a");
@@ -28,15 +36,9 @@ tabContainer.addEventListener("click", (e) => {
         clickedTab.getAttribute("href")
     );
 
-    if (!activePanel) {
-        return;
+    if (activePanel) {
+        showPanel(activePanel);
     }
-
-    tabPanels.forEach((panel) => {
-        panel.setAttribute("hidden", "");
-    });
-
-    activePanel.removeAttribute("hidden");
 });
 
 inputFile.addEventListener("change", () => {
@@ -63,6 +65,37 @@ const showError = (message) => {
     alert(message);
 };
 
+document.getElementById("location").addEventListener("panelactive",async(e)=>{
+    try {
+        const response = await fetch(
+            `${domain}/api/doctor/get-practiceLocation`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+            document.getElementById("city").value = data.city;
+            document.getElementById("state").value = data.state;
+            document.getElementById("country").value = data.country;
+            document.getElementById("address").value = data.address;
+            document.getElementById("PIN").value = data.pin;
+            document.getElementById("facility").value = data.facilityName;
+            document.getElementById("fee").value = data.consultationFee;
+        } else {
+            showError(data.message || "Unable to get practice location");
+        }
+    } catch (error) {
+        showError(error.message);
+    }
+})
+
 document.getElementById("btnLoc").addEventListener("click", async (e) => {
     e.preventDefault();
 
@@ -83,7 +116,7 @@ document.getElementById("btnLoc").addEventListener("click", async (e) => {
 
     try {
         const response = await fetch(
-            `${domain}/set-practiceLocation`,
+            `${domain}/api/doctor/set-practiceLocation`,
             {
                 method: "PUT",
                 headers: {
@@ -114,6 +147,37 @@ document.getElementById("btnLoc").addEventListener("click", async (e) => {
     }
 });
 
+document.getElementById("education").addEventListener("panelactive",async(e)=>{
+    try {
+        const response = await fetch(
+            `${domain}/api/doctor/get-education`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+            document.getElementById("institute").value = data.institute;
+            document.getElementById("deg_type").value = data.degreeType;
+            document.getElementById("deg_name").value = data.degreeName;
+            document.getElementById("feildOfStudy").value = data.feildOfStudy;
+            document.getElementById("s1").value = data.specialization1;
+            document.getElementById("s2").value = data.specialization2;
+            document.getElementById("s3").value = data.specialization3;
+        } else {
+            showError(data.message || "Unable to get education details");
+        }
+    } catch (error) {
+        showError(error.message);
+    }
+})
+
 document.getElementById("btnEdu").addEventListener("click", async (e) => {
     e.preventDefault();
 
@@ -127,17 +191,14 @@ document.getElementById("btnEdu").addEventListener("click", async (e) => {
     const institute = document.getElementById("institute").value.trim();
     const degreeType = document.getElementById("deg_type").value.trim();
     const degreeName = document.getElementById("deg_name").value.trim();
-    const fieldOfStudy = document
-        .getElementById("feildOfStudy")
-        .value.trim();
-
+    const fieldOfStudy = document.getElementById("feildOfStudy").value.trim();
     const specialization1 = document.getElementById("s1").value.trim();
     const specialization2 = document.getElementById("s2").value.trim();
     const specialization3 = document.getElementById("s3").value.trim();
 
     try {
         const response = await fetch(
-            `${domain}/set-education`,
+            `${domain}/api/doctor/set-education`,
             {
                 method: "PUT",
                 headers: {
@@ -197,6 +258,35 @@ document.getElementById("add").addEventListener("click",(e)=>{
     })
 })
 
+document.getElementById("experiance").addEventListener("panelactive",async(e)=>{
+    try{
+        const response = await fetch(`${domain}/api/doctor/getexperience`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            data.experiences.forEach((experiance)=>{
+                document.getElementById("add").click();
+                document.getElementById(`exp_facility_${exp}`).value = experiance.facilityName;
+                document.getElementById(`exp_designation_${exp}`).value = experiance.designation;
+                document.getElementById(`start_${exp}`).value = experiance.startDate;
+                document.getElementById(`end_${exp}`).value = experiance.endDate;
+            })
+        } else {
+            showError(data.message || "Unable to get experiance details");
+        }
+
+    }catch(error){
+        showError(error.message);
+    }
+})
+
 document.getElementById("btnExp").addEventListener("click",async(e)=>{
     e.preventDefault();
 
@@ -229,17 +319,51 @@ document.getElementById("btnExp").addEventListener("click",async(e)=>{
 
     console.dir(experiences);
 
-    const response = await fetch(`${domain}/save-experience`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-        },
-        body: JSON.stringify({ experiences })
-    });
+    try{
+        const response = await fetch(`${domain}/api/doctor/addexperience`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            },
+            body: JSON.stringify({ experiences })
+        });
+    }catch(error){
+        showError(error.message);
+    }
 
     const data = await response.json();
     console.log(data);
+})
+
+document.getElementById("operational").addEventListener("panelactive",async(e)=>{
+    try{
+        const response = await fetch(`${domain}/api/doctor/set-operationalDetails`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        });
+
+        const data = await response.json();
+
+        let idx = 1;
+        if (response.ok) {
+            document.getElementById("m_cap").value = data.morningCapacity;
+            document.getElementById("a_cap").value = data.afternoonCapacity;
+            document.getElementById("e_cap").value = data.eveningCapacity;
+            document.querySelectorAll('input[name="holiday"]').forEach((checkbox) => {
+                checkbox.checked = holiday.includes(`${idx}`);
+                idx++;
+            });
+        } else {
+            showError(data.message || "Unable to get operational details");
+        }
+
+    }catch(error){
+        showError(error.message);
+    }
 })
 
 document.getElementById("btnOps").addEventListener("click", async (e) => {
@@ -276,7 +400,7 @@ document.getElementById("btnOps").addEventListener("click", async (e) => {
 
     try {
         const response = await fetch(
-            `${domain}/api/doctor-profile/set-operational-details`,
+            `${domain}/api/doctor/set-operationalDetails`,
             {
                 method: "PUT",
                 headers: {
@@ -304,6 +428,32 @@ document.getElementById("btnOps").addEventListener("click", async (e) => {
     }
 });
 
+document.getElementById("about").addEventListener("panelactive",async(e)=>{
+    try{
+        const response = await fetch(
+            `${domain}/get-about`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+            document.getElementById("designation").value = data.designation;
+            document.getElementById("desc").value = data.about;
+            document.getElementById("pfp").files[0] = data.dphoto;
+        } else {
+            showError(data.message || "Unable to get profile details");
+        }
+    }catch(error){
+        showError(error.message);
+    }
+})
+
 document.getElementById("btnAbout").addEventListener("click", async (e) => {
     e.preventDefault();
 
@@ -314,10 +464,7 @@ document.getElementById("btnAbout").addEventListener("click", async (e) => {
         return;
     }
 
-    const designation = document
-        .getElementById("designation")
-        .value.trim();
-
+    const designation = document.getElementById("designation").value.trim();
     const description = document.getElementById("desc").value.trim();
     const profileFile = document.getElementById("pfp").files[0];
 
@@ -332,7 +479,7 @@ document.getElementById("btnAbout").addEventListener("click", async (e) => {
 
     try {
         const response = await fetch(
-            `${domain}/set-about`,
+            `${domain}/api/doctor/set-about`,
             {
                 method: "PUT",
                 headers: {
@@ -382,7 +529,7 @@ document.getElementById("btnRecords").addEventListener("click", async (e) => {
 
     try {
         const response = await fetch(
-            `${domain}/set-documents`,
+            `${domain}/api/doctor/get-about`,
             {
                 method: "POST",
                 headers: {

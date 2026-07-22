@@ -85,6 +85,10 @@ input{
     align-items: flex-start;
 }
 
+.tabs_panel > div[hidden] {
+    display: none !important;
+}
+
 #searchResults{
     width: 800px;
 }
@@ -126,6 +130,10 @@ select{
     overflow: hidden;
     text-align: center;
     animation: appear 1s ease-in-out;
+}
+
+.fw{
+    width: 80vw;
 }
 
 .card img{
@@ -328,7 +336,6 @@ select{
 
 #reports .card{
     width: 80vw;
-    height: 100vh;
 }
 
 #reports .card img{
