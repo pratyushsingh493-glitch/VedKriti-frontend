@@ -1293,7 +1293,7 @@ document
         event.preventDefault();
 
         try{
-            const response = fetch(`${domain}/api/doctor/profile-status`,{
+            const response = await fetch(`${domain}/api/doctor/profile-status`,{
                 method : "GET",
                 headers : {
                     "Authorization" : `Bearer ${localStorage.getItem("token")}`
