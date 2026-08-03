@@ -1300,7 +1300,7 @@ document
                 }
             })
 
-            const data = response.json();
+            const data =await response.json();
             if(data.data === "true"){
                 window.location.href = "../doc-dashboard/home.html";
             }else{
