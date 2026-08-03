@@ -1301,7 +1301,7 @@ document
             })
 
             const data =await response.json();
-            if(data.data === "true"){
+            if(data.data === true){
                 window.location.href = "../doc-dashboard/home.html";
             }else{
                 alert("You Are Not Yet Verified");
