@@ -1292,6 +1292,24 @@ document
     .addEventListener("click", async (event) => {
         event.preventDefault();
 
+        try{
+            const response = fetch(`${domain}/api/doctor/profile-status`,{
+                method : "GET",
+                headers : {
+                    "Authorization" : `Bearer ${localStorage.getItem("token")}`
+                }
+            })
+
+            const data = response.json();
+            if(data.data === "true"){
+                window.location.href = "../doc-dashboard/home.html";
+            }else{
+                alert("You Are Not Yet Verified");
+            }
+        }catch(error){
+            showError(error);
+        }
+
         const submitButton = event.currentTarget;
         const currentForm =
             submitButton.closest("form");
