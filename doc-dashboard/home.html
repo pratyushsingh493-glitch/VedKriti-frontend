@@ -44,6 +44,14 @@
             >
                 Today's Consultations
             </a>
+
+            <a
+                id="tab-3"
+                href="#profile"
+                aria-selected="false"
+            >
+                My Profile
+            </a>
         </nav>
     </header>
 
@@ -159,6 +167,56 @@
                     id="todayResults"
                     class="results"
                 ></div>
+            </section>
+
+            <!-- My profile -->
+            <section
+                id="profile"
+                aria-labelledby="tab-3"
+                hidden
+            >
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">
+                            Doctor dashboard
+                        </p>
+
+                        <h1>My Profile</h1>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="refreshProfile"
+                    >
+                        Refresh
+                    </button>
+                </div>
+
+                <div
+                    id="profileMessage"
+                    class="message"
+                    aria-live="polite"
+                ></div>
+
+                <nav
+                    class="profile-quicknav"
+                    id="profileQuicknav"
+                    aria-label="Jump to profile section"
+                >
+                    <a href="#profileAbout">Overview</a>
+                    <a href="#profileStats">Stats</a>
+                    <a href="#profileExperience">Experience</a>
+                    <a href="#profileFeedback">Reviews</a>
+                    <a href="#profileAvailability">Availability</a>
+                </nav>
+
+                <div id="profileContent" class="profile-content">
+                    <div id="profileAbout"></div>
+                    <div id="profileStats"></div>
+                    <div id="profileExperience"></div>
+                    <div id="profileFeedback"></div>
+                    <div id="profileAvailability"></div>
+                </div>
             </section>
         </div>
     </main>

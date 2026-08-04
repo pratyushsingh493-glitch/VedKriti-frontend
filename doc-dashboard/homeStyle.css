@@ -416,6 +416,410 @@ button:disabled {
     color: var(--ink);
 }
 
+/* =========================================================
+   MY PROFILE TAB
+========================================================= */
+
+.profile-content {
+    display: grid;
+    gap: 1.5rem;
+}
+
+/* Offsets so scrollIntoView (from the quick-nav) stops below
+   the sticky header + sticky quick-nav bar, instead of tucking
+   the section's top edge underneath them. */
+#profileAbout,
+#profileStats,
+#profileExperience,
+#profileFeedback,
+#profileAvailability {
+    scroll-margin-top: 160px;
+}
+
+/* Quick nav — jump between profile sections instead of scrolling */
+
+.profile-quicknav {
+    position: sticky;
+    top: 89px;
+    z-index: 5;
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    padding: 0.6rem;
+    margin-bottom: 0.25rem;
+    background: rgba(244, 241, 235, 0.96);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    scrollbar-width: none;
+}
+
+.profile-quicknav::-webkit-scrollbar {
+    display: none;
+}
+
+.profile-quicknav a {
+    flex: 0 0 auto;
+    padding: 0.45rem 0.85rem;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 150ms ease, color 150ms ease;
+}
+
+.profile-quicknav a:hover {
+    color: white;
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
+}
+
+/* Show more / show less toggle for long lists */
+
+.show-toggle-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.show-toggle {
+    min-height: 38px;
+    padding: 0.5rem 1.1rem;
+    color: var(--accent-dark);
+    background: rgba(46, 185, 194, 0.1);
+    border: 1px solid rgba(46, 185, 194, 0.3);
+    font-size: 0.8rem;
+}
+
+.show-toggle:hover:not(:disabled) {
+    color: white;
+    background: var(--accent-dark);
+    box-shadow: none;
+    transform: none;
+}
+
+.profile-block {
+    padding: clamp(1.2rem, 3vw, 2rem);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.profile-block h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.1rem;
+    font-size: 1.2rem;
+}
+
+/* About card */
+
+.about-doctor {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 1.5rem;
+}
+
+.profile-photo {
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    gap: 0.6rem;
+}
+
+.avatar-wrap {
+    position: relative;
+    width: 110px;
+    height: 110px;
+}
+
+.avatar-img,
+.avatar-fallback {
+    width: 110px;
+    height: 110px;
+    border: 3px solid var(--accent);
+    border-radius: 50%;
+}
+
+.avatar-img {
+    object-fit: cover;
+}
+
+.avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: var(--accent-dark);
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.profile-photo .verified-badge {
+    padding: 0.25rem 0.6rem;
+    color: var(--success);
+    background: rgba(19, 122, 75, 0.09);
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.about-details h3 {
+    margin-bottom: 0.3rem;
+    font-size: clamp(1.25rem, 3vw, 1.6rem);
+}
+
+.about-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.45rem;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.about-line strong {
+    color: var(--ink);
+}
+
+.info-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1rem;
+}
+
+.info-chips span {
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.chip-fee {
+    color: var(--accent-dark);
+    background: rgba(46, 185, 194, 0.12);
+}
+
+.chip-rating {
+    color: var(--warning);
+    background: rgba(161, 92, 0, 0.1);
+}
+
+.chip-consulted {
+    color: var(--success);
+    background: rgba(19, 122, 75, 0.09);
+}
+
+.about-bio {
+    padding: 1rem 1.2rem;
+    margin-top: 1.2rem;
+    color: var(--ink-soft);
+    background: var(--surface-soft);
+    border-left: 3px solid var(--accent);
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+
+/* Stats grid */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.stat-card {
+    padding: 1.1rem;
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+.stat-card .stat-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.stat-card .stat-label {
+    margin-top: 0.35rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* Experience timeline */
+
+.timeline {
+    display: grid;
+    gap: 0;
+}
+
+.timeline-item {
+    position: relative;
+    padding: 0 0 1.4rem 1.6rem;
+    border-left: 2px solid var(--border);
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    top: 0.2rem;
+    left: -0.5rem;
+    width: 0.85rem;
+    height: 0.85rem;
+    background: var(--accent);
+    border: 2px solid var(--surface);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--accent);
+}
+
+.timeline-item .facility-name {
+    font-weight: 800;
+    font-size: 1rem;
+}
+
+.timeline-item .facility-dates {
+    margin-top: 0.15rem;
+    color: var(--accent-dark);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.timeline-item .facility-role {
+    margin-top: 0.15rem;
+    color: var(--muted);
+    font-size: 0.84rem;
+}
+
+/* Feedback grid */
+
+.feedback-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 0.9rem;
+}
+
+.feedback-card {
+    padding: 1rem;
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+}
+
+.feedback-card .feedback-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.feedback-card .patient-name {
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.feedback-card .stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.feedback-card .stars img {
+    width: 14px;
+    height: 14px;
+}
+
+.feedback-card .review-text {
+    color: var(--muted);
+    font-size: 0.84rem;
+    line-height: 1.5;
+}
+
+/* Availability grid */
+
+.availability-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1rem;
+}
+
+.day-card {
+    padding: 1rem;
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+}
+
+.day-card.is-holiday {
+    background: rgba(180, 35, 24, 0.05);
+    border-color: rgba(180, 35, 24, 0.2);
+}
+
+.day-card .day-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 800;
+    font-size: 0.92rem;
+}
+
+.day-card .holiday-tag {
+    padding: 0.2rem 0.5rem;
+    color: var(--danger);
+    background: rgba(180, 35, 24, 0.1);
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.slot-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+}
+
+.slot-row:first-of-type {
+    border-top: 0;
+}
+
+.slot-row .slot-name {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.slot-row .slot-count {
+    color: var(--muted);
+}
+
+.slot-row .slot-count.is-full {
+    color: var(--danger);
+    font-weight: 700;
+}
+
 /* Footer */
 
 footer {
@@ -487,6 +891,20 @@ footer h2 {
         justify-content: flex-start;
         max-width: none;
     }
+
+    .about-doctor {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+    }
+
+    .about-line {
+        justify-content: center;
+    }
+
+    .info-chips {
+        justify-content: center;
+    }
 }
 
 /* Mobile */
@@ -541,6 +959,16 @@ footer h2 {
 
     footer {
         padding: 2.5rem 1rem;
+    }
+
+    /* Header is no longer sticky on mobile, so the quick-nav
+       is the only sticky element pinning content down. */
+    #profileAbout,
+    #profileStats,
+    #profileExperience,
+    #profileFeedback,
+    #profileAvailability {
+        scroll-margin-top: 90px;
     }
 }
 
