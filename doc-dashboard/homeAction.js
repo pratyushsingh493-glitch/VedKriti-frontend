@@ -1569,7 +1569,7 @@ const renderStats = (
 
     profileStats.innerHTML = `
         <div class="profile-block">
-            <h2>📊 Quick Stats</h2>
+            <h2>Quick Stats</h2>
 
             <div class="stats-grid">
                 ${stats
@@ -1598,7 +1598,7 @@ const renderExperience = (experiance) => {
     if (!experiance.length) {
         profileExperience.innerHTML = `
             <div class="profile-block">
-                <h2>🏥 Experience &amp; Hospital Work</h2>
+                <h2> Experience &amp; Hospital Work</h2>
 
                 <div class="empty-state">
                     <h2>No experience added yet</h2>
@@ -1623,7 +1623,7 @@ const renderExperience = (experiance) => {
 
     profileExperience.innerHTML = `
         <div class="profile-block">
-            <h2>🏥 Experience &amp; Hospital Work</h2>
+            <h2> Experience &amp; Hospital Work</h2>
 
             <div class="timeline">
                 ${visibleItems
@@ -1687,7 +1687,7 @@ const renderFeedback = (feedback) => {
     if (!feedback.length) {
         profileFeedback.innerHTML = `
             <div class="profile-block">
-                <h2>⭐ Patient Feedback &amp; Reviews (0)</h2>
+                <h2> Patient Feedback &amp; Reviews (0)</h2>
 
                 <div class="empty-state">
                     <h2>No reviews yet</h2>
@@ -1712,7 +1712,7 @@ const renderFeedback = (feedback) => {
 
     profileFeedback.innerHTML = `
         <div class="profile-block">
-            <h2>⭐ Patient Feedback &amp; Reviews (${feedback.length})</h2>
+            <h2> Patient Feedback &amp; Reviews (${feedback.length})</h2>
 
             <div class="feedback-grid">
                 ${visibleItems
@@ -1798,7 +1798,7 @@ const renderAvailability = (availability) => {
     if (!availability.length) {
         profileAvailability.innerHTML = `
             <div class="profile-block">
-                <h2>📅 Available Booking Slots</h2>
+                <h2> Available Booking Slots</h2>
 
                 <div class="empty-state">
                     <h2>No availability set for the next 14 days</h2>
@@ -1812,7 +1812,7 @@ const renderAvailability = (availability) => {
 
     profileAvailability.innerHTML = `
         <div class="profile-block">
-            <h2>📅 Available Booking Slots</h2>
+            <h2> Available Booking Slots</h2>
 
             <p class="about-line" style="margin-bottom:1rem;">
                 Read-only view of your next 14 days. Booking is disabled
