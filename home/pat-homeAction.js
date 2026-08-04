@@ -177,15 +177,15 @@ const renderDoctorCard = (doctor) => {
                 </div>
                 <div class="doctor-info">
                     <h2 class="doctor-name">Dr. ${escapeHTML(doctor.name || "Doctor")}</h2>
-                    <p class="doctor-email">📧 ${escapeHTML(doctor.email || "N/A")}</p>
-                    <p class="doctor-designation">💼 ${escapeHTML(doctor.designation || "Doctor")}</p>
-                    ${specialities ? `<p class="doctor-specialities">🩺 <strong>Specialities:</strong> ${escapeHTML(specialities)}</p>` : ""}
-                    ${qualification ? `<p class="doctor-qualification">🎓 <strong>Qualification:</strong> ${escapeHTML(qualification)}</p>` : ""}
-                    ${location ? `<p class="doctor-location">📍 <strong>Location:</strong> ${escapeHTML(location)}</p>` : ""}
+                    <p class="doctor-email">${escapeHTML(doctor.email || "N/A")}</p>
+                    <p class="doctor-designation"> ${escapeHTML(doctor.designation || "Doctor")}</p>
+                    ${specialities ? `<p class="doctor-specialities"> <strong>Specialities:</strong> ${escapeHTML(specialities)}</p>` : ""}
+                    ${qualification ? `<p class="doctor-qualification"> <strong>Qualification:</strong> ${escapeHTML(qualification)}</p>` : ""}
+                    ${location ? `<p class="doctor-location"> <strong>Location:</strong> ${escapeHTML(location)}</p>` : ""}
                     <div class="doctor-stats">
                         <span class="stat-fee">Fee: ${escapeHTML(formatPrice(doctor.consultationFee))}</span>
-                        <span class="stat-rating">⭐ ${rating.toFixed(1)} / 5</span>
-                        <span class="stat-patients">👥 ${escapeHTML(doctor.patientCount ?? 0)} Patients</span>
+                        <span class="stat-rating"> ${rating.toFixed(1)} / 5</span>
+                        <span class="stat-patients">${escapeHTML(doctor.patientCount ?? 0)} Patients</span>
                     </div>
                     ${doctor.about ? `<p class="doctor-about">📝 ${escapeHTML(doctor.about)}</p>` : ""}
                 </div>
@@ -441,7 +441,7 @@ const renderDoctorProfileView = (profileData) => {
 
         <section class="availability-section">
             <div class="section-title">
-                <h2>🗓️ Available Booking Slots</h2>
+                <h2> Available Booking Slots</h2>
                 <p>Select date, slot, and consultation type (Online/Offline) to book an appointment.</p>
             </div>
             <div class="availability-carousel">
@@ -511,11 +511,11 @@ const renderDoctorProfileView = (profileData) => {
                 ${doctor.photo ? `<img class="doctor-photo-lg" src="${escapeHTML(doctor.photo)}" alt="Dr. ${escapeHTML(doctor.name)}">` : `<div class="doctor-photo-lg placeholder-photo">+</div>`}
                 <div class="profile-details-content">
                     <h2>Dr. ${escapeHTML(doctor.name)}</h2>
-                    <p class="email">📧 ${escapeHTML(doctor.email)}</p>
-                    <p class="designation">💼 ${escapeHTML(doctor.designation)}</p>
-                    ${specialities ? `<p>🩺 <strong>Specialities:</strong> ${escapeHTML(specialities)}</p>` : ""}
-                    ${qualification ? `<p>🎓 <strong>Qualification:</strong> ${escapeHTML(qualification)}</p>` : ""}
-                    ${location ? `<p>📍 <strong>Facility & Address:</strong> ${escapeHTML(location)}</p>` : ""}
+                    <p class="email">${escapeHTML(doctor.email)}</p>
+                    <p class="designation">${escapeHTML(doctor.designation)}</p>
+                    ${specialities ? `<p> <strong>Specialities:</strong> ${escapeHTML(specialities)}</p>` : ""}
+                    ${qualification ? `<p><strong>Qualification:</strong> ${escapeHTML(qualification)}</p>` : ""}
+                    ${location ? `<p> <strong>Facility & Address:</strong> ${escapeHTML(location)}</p>` : ""}
                     <div class="profile-badges">
                         <span class="badge fee-badge">Consultation Fee: ${escapeHTML(formatPrice(doctor.consultationFee))}</span>
                         <span class="badge rating-badge">Rating: ${doctorRating.toFixed(1)} / 5</span>
@@ -527,7 +527,7 @@ const renderDoctorProfileView = (profileData) => {
         </section>
 
         <section class="experience-timeline-section">
-            <h2>🏥 Experience & Hospital Work</h2>
+            <h2> Experience & Hospital Work</h2>
             ${experiencesList.length ? `
                 <div class="timeline-container">
                     ${experiencesList.map((exp, index) => {
@@ -555,7 +555,7 @@ const renderDoctorProfileView = (profileData) => {
 
         ${feedbackList.length ? `
             <section class="patient-reviews-section">
-                <h2>⭐ Patient Feedback & Reviews (${feedbackList.length})</h2>
+                <h2> Patient Feedback & Reviews (${feedbackList.length})</h2>
                 <div class="reviews-grid">
                     ${feedbackList.map(fb => {
                         const patName = fb.patID?.name || "Patient";
@@ -564,7 +564,7 @@ const renderDoctorProfileView = (profileData) => {
                             <div class="review-card">
                                 <div class="review-header">
                                     <strong class="patient-name">${escapeHTML(patName)}</strong>
-                                    <span class="review-rating">${r} / 5 ⭐</span>
+                                    <span class="review-rating">${r} / 5 </span>
                                 </div>
                                 <p class="review-text">${escapeHTML(fb.feedback || "No written review.")}</p>
                             </div>
@@ -574,7 +574,7 @@ const renderDoctorProfileView = (profileData) => {
             </section>
         ` : `
             <section class="patient-reviews-section">
-                <h2>⭐ Patient Feedback & Reviews</h2>
+                <h2> Patient Feedback & Reviews</h2>
                 <div class="no-feedback-state">
                     <p>No patient reviews yet. Be the first to consult and leave a review!</p>
                 </div>
@@ -696,11 +696,11 @@ const renderUpcomingCard = (booking) => {
                     <span class="status-badge status-${status.toLowerCase()}">${escapeHTML(status)}</span>
                 </div>
                 <div class="booking-details-grid">
-                    <p>📅 <strong>Date:</strong> ${escapeHTML(formatDate(booking.date))}</p>
-                    <p>⏰ <strong>Slot:</strong> ${escapeHTML(booking.slot || "N/A")}</p>
-                    <p>💻 <strong>Type:</strong> <span class="type-badge">${escapeHTML(consultationType)}</span></p>
-                    <p>🎫 <strong>Token Number:</strong> <span class="token-badge">${tokenNum}</span> ${tokenNum === 0 ? `<small class="token-note">(Consultation not started)</small>` : ""}</p>
-                    ${facility ? `<p>🏥 <strong>Facility:</strong> ${escapeHTML(facility)}</p>` : ""}
+                    <p> <strong>Date:</strong> ${escapeHTML(formatDate(booking.date))}</p>
+                    <p> <strong>Slot:</strong> ${escapeHTML(booking.slot || "N/A")}</p>
+                    <p> <strong>Type:</strong> <span class="type-badge">${escapeHTML(consultationType)}</span></p>
+                    <p> <strong>Token Number:</strong> <span class="token-badge">${tokenNum}</span> ${tokenNum === 0 ? `<small class="token-note">(Consultation not started)</small>` : ""}</p>
+                    ${facility ? `<p> <strong>Facility:</strong> ${escapeHTML(facility)}</p>` : ""}
                 </div>
             </div>
             ${isOnline ? `
@@ -885,9 +885,9 @@ const renderPastCard = (booking) => {
                     <span class="status-badge status-${status.toLowerCase()}">${escapeHTML(status)}</span>
                 </div>
                 <div class="booking-details-grid">
-                    <p>📅 <strong>Date:</strong> ${escapeHTML(formatDate(booking.date))}</p>
-                    <p>⏰ <strong>Slot:</strong> ${escapeHTML(booking.slot || "N/A")}</p>
-                    <p>💻 <strong>Type:</strong> ${escapeHTML(booking.consultationType || "OFFLINE")}</p>
+                    <p> <strong>Date:</strong> ${escapeHTML(formatDate(booking.date))}</p>
+                    <p> <strong>Slot:</strong> ${escapeHTML(booking.slot || "N/A")}</p>
+                    <p> <strong>Type:</strong> ${escapeHTML(booking.consultationType || "OFFLINE")}</p>
                 </div>
             </div>
 
@@ -1030,16 +1030,16 @@ const renderReportCard = (report) => {
     return `
         <article class="report-card">
             <div class="report-main">
-                <div class="report-icon">📄</div>
+                <div class="report-icon"></div>
                 <div class="report-info">
                     <h2>${escapeHTML(title)}</h2>
-                    <p>📂 <strong>Category:</strong> ${escapeHTML(category)} | 📌 <strong>Format:</strong> ${escapeHTML(fileType)}</p>
-                    <p>🗓️ <strong>Uploaded:</strong> ${escapeHTML(uploadedAt)}</p>
+                    <p> <strong>Category:</strong> ${escapeHTML(category)} | 📌 <strong>Format:</strong> ${escapeHTML(fileType)}</p>
+                    <p> <strong>Uploaded:</strong> ${escapeHTML(uploadedAt)}</p>
                 </div>
             </div>
             <div class="report-actions">
                 <a class="download-report-btn" href="${escapeHTML(fileUrl)}" target="_blank" rel="noopener noreferrer" download>
-                    📥 Open / Download Report
+                    Open / Download Report
                 </a>
             </div>
         </article>
