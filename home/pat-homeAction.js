@@ -926,7 +926,7 @@ const loadPastBookings = async () => {
     results.innerHTML = renderLoader("Loading past bookings...");
 
     try {
-        const response = await fetch(`${ENDPOINTS.past}?status=COMPLETED`, {
+        const response = await fetch(`${ENDPOINTS.past}?status=CDONE`, {
             method: "GET",
             headers: authHeaders()
         });
