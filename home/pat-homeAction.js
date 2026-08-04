@@ -813,7 +813,7 @@ $("#consultationResults").addEventListener("click", async (event) => {
     } catch (err) {
         setMessage($("#consultationMessage"), err.message, "error");
         btn.disabled = false;
-        btn.textContent = "📹 Join Consultation";
+        btn.textContent = " Join Consultation";
     }
 });
 
@@ -1033,7 +1033,7 @@ const renderReportCard = (report) => {
                 <div class="report-icon"></div>
                 <div class="report-info">
                     <h2>${escapeHTML(title)}</h2>
-                    <p> <strong>Category:</strong> ${escapeHTML(category)} | 📌 <strong>Format:</strong> ${escapeHTML(fileType)}</p>
+                    <p> <strong>Category:</strong> ${escapeHTML(category)} |  <strong>Format:</strong> ${escapeHTML(fileType)}</p>
                     <p> <strong>Uploaded:</strong> ${escapeHTML(uploadedAt)}</p>
                 </div>
             </div>
