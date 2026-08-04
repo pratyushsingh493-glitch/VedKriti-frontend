@@ -926,7 +926,7 @@ const loadPastBookings = async () => {
     results.innerHTML = renderLoader("Loading past bookings...");
 
     try {
-        const response = await fetch(`${ENDPOINTS.past}?status='DONE'`, {
+        const response = await fetch(`${ENDPOINTS.past}`, {
             method: "GET",
             headers: authHeaders()
         });
@@ -937,7 +937,7 @@ const loadPastBookings = async () => {
         }
 
         const allBookings = data.data || data.bookings || data.consultations || [];
-        const past = allBookings.filter(b => ["DONE", "CANCELED"].includes(String(b.status).toUpperCase()));
+        const past = allBookings.filter(b => ["CONFIRMED", "CANCELED"].includes(String(b.status).toUpperCase()));
 
         if (!past.length) {
             results.innerHTML = `
