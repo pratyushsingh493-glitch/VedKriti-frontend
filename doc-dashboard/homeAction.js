@@ -2028,8 +2028,6 @@ profileFeedback.addEventListener(
 /* =========================================================
    INITIAL PAGE SETUP
 ========================================================= */
-
-$("#date").max =
-    getTodayDate();
+$("#date").min = getTodayDate(); 
 
 openTab("profile");
