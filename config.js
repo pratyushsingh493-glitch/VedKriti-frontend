@@ -1,1 +1,1 @@
-export const domain = "https://ved-kriti-frontend.vercel.app";
+export const domain = "https://ved-kriti-backend-1.onrender.com";
