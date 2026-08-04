@@ -142,13 +142,19 @@ form.addEventListener("submit", async (event) => {
 
         const data = await readJSON(response);
 
-        if (!response.ok) {
-            throw new Error(
-                data.message || "OTP verification failed."
-            );
-        }
+if (!response.ok) {
+    throw new Error(
+        data.message || "OTP verification failed."
+    );
+}
 
-        localStorage.removeItem("otpPurpose");
+// Save login details
+localStorage.setItem("token", data.token);
+localStorage.setItem("userId", data.userId);
+localStorage.setItem("role", data.role);
+localStorage.setItem("name", data.name);
+
+localStorage.removeItem("otpPurpose");
 
         if (purpose === "START_CONSULTATION") {
             globalThis.location.href =
