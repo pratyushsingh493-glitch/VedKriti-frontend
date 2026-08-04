@@ -731,7 +731,7 @@ const loadUpcomingConsultations = async () => {
     results.innerHTML = renderLoader("Loading upcoming consultations...");
 
     try {
-        const response = await fetch(`${ENDPOINTS.upcoming}?status=CONFIRMED`, {
+        const response = await fetch(`${ENDPOINTS.upcoming}`, {
             method: "GET",
             headers: authHeaders()
         });
