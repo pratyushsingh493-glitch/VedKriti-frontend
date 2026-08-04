@@ -731,7 +731,7 @@ const loadUpcomingConsultations = async () => {
     results.innerHTML = renderLoader("Loading upcoming consultations...");
 
     try {
-        const response = await fetch(ENDPOINTS.upcoming, {
+        const response = await fetch(`${ENDPOINTS.upcoming}?status=CONFIRMED`, {
             method: "GET",
             headers: authHeaders()
         });
@@ -926,7 +926,7 @@ const loadPastBookings = async () => {
     results.innerHTML = renderLoader("Loading past bookings...");
 
     try {
-        const response = await fetch(ENDPOINTS.past, {
+        const response = await fetch(`${ENDPOINTS.past}?status=COMPLETED`, {
             method: "GET",
             headers: authHeaders()
         });
