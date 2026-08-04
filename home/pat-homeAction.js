@@ -187,7 +187,7 @@ const renderDoctorCard = (doctor) => {
                         <span class="stat-rating"> ${rating.toFixed(1)} / 5</span>
                         <span class="stat-patients">${escapeHTML(doctor.patientCount ?? 0)} Patients</span>
                     </div>
-                    ${doctor.about ? `<p class="doctor-about">📝 ${escapeHTML(doctor.about)}</p>` : ""}
+                    ${doctor.about ? `<p class="doctor-about">${escapeHTML(doctor.about)}</p>` : ""}
                 </div>
             </div>
             <div class="doctor-card-footer">
