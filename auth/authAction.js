@@ -487,8 +487,7 @@ form.addEventListener(
 
             const profileCompleted =
                 await getProfileStatus(
-                    normalizedRole,
-                    data.token
+                    normalizedRole
                 );
 
             /*
