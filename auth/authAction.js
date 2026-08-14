@@ -407,19 +407,13 @@ form.addEventListener(
         setLoading(true);
 
         try {
-            const response = await fetch(
-                `${domain}${endpoint}`,
-                {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                }
-            );
-
+           const response = await fetch(
+    `${domain}${endpoint}`,
+    {
+        method: "GET",
+        credentials: "include"
+    }
+);
             const data =
                 await getResponseData(response);
 
