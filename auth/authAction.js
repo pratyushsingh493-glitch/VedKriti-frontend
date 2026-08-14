@@ -254,16 +254,13 @@ const getProfileStatus = async (
     }
 
     try {
-        const response = await fetch(
-            `${domain}${endpoint}`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization:
-                        `Bearer ${token}`
-                }
-            }
-        );
+     const response = await fetch(
+    `${domain}${endpoint}`,
+    {
+        method: "GET",
+        credentials: "include"
+    }
+);
 
         const result =
             await getResponseData(response);
