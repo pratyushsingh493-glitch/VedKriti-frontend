@@ -682,34 +682,26 @@ $("#doctorProfileContainer").addEventListener("click", async (event) => {
     bookBtn.textContent = "Booking...";
 
     try {
-        const url = ENDPOINTS.bookDoctor(docId, consultationType);
-        const response = await apiFetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ date, slot })
-        });
-
-
-        const data = await readJSON(response);
-
-        if (!response.ok) {
-            throw new Error(data.message || "Booking failed.");
-        }
-
-
-
-        setMessage(msgEl, data.message || "Appointment slot reserved successfully!", "success");
-        globalThis.alert(data.message || "Appointment slot reserved successfully!");
-
-        localStorage.setItem("orderID",data.data.payment.orderId);
-        localStorage.setItem("amount",data.data.payment.amount);
-        localStorage.setItem("currency",data.data.payment.currency);
-        localStorage.setItem("keyID",data.data.payment.keyId);
-        localStorage.setItem("bookingID",data.data.bookingId);
-
-        globalThis.location.href = "../payments/checkout.html";
+      const url = ENDPOINTS.bookDoctor(docId, consultationType);
+const response = await apiFetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ date, slot })
+});
+const data = await readJSON(response);
+if (!response.ok) throw new Error(data.message || "Booking failed.");
+const bookingId = data.data.bookingId;
+// 2. Initialize Razorpay Payment Order
+const paymentRes = await apiFetch(`/api/payment/create-order?bookingId=${bookingId}`, { method: "POST" });
+const paymentData = await readJSON(paymentRes);
+if (!paymentRes.ok) throw new Error(paymentData.message || "Failed to initialize payment gateway.");
+// 3. Save Payment Data and Redirect to checkout
+localStorage.setItem("orderID", paymentData.data.orderId);
+localStorage.setItem("amount", paymentData.data.amount);
+localStorage.setItem("currency", paymentData.data.currency);
+localStorage.setItem("keyID", paymentData.data.keyId);
+localStorage.setItem("bookingID", paymentData.data.bookingId);
+globalThis.location.href = "../payments/checkout.html";
 
         // Open Upcoming Consultations tab
         openTab("consultations");
