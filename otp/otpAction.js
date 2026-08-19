@@ -109,13 +109,11 @@ form.addEventListener("submit", async (event) => {
                 {
                     method: "PUT",
 
+                    credentials: "include",
                     headers: {
-                        Authorization:
-                            `Bearer ${
-                                localStorage.getItem("token") || ""
-                            }`
-                    }
-                }
+                        "Content-Type": "application/json"
+                    },
+}
             );
         } else {
             response = await fetch(
@@ -123,16 +121,11 @@ form.addEventListener("submit", async (event) => {
                 {
                     method: "POST",
 
+                    credentials: "include",
                     headers: {
-                        "Content-Type": "application/json",
-
-                        Authorization:
-                            `Bearer ${
-                                localStorage.getItem("token") || ""
-                            }`
+                        "Content-Type": "application/json"
                     },
-
-                    body: JSON.stringify({
+body: JSON.stringify({
                         otp,
                         email: localStorage.getItem("email")
                     })
@@ -187,14 +180,11 @@ resend.addEventListener("click", async (event) => {
         {
             method: "POST",
 
-            headers: {
-                "Content-Type": "application/json",
-
-                Authorization:
-                    `Bearer ${localStorage.getItem("token")}`
-            },
-
-            body: JSON.stringify({
+            credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+body: JSON.stringify({
                 email: localStorage.getItem("email")
             })
         }

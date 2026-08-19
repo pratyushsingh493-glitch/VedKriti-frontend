@@ -32,9 +32,10 @@ const showError = (message) => {
 //         `${domain}/api/patient/update-profile`,
 //         {
 //             method: "PUT",
-//             headers: {
-//                 Authorization: `Bearer ${localStorage.getItem("token")}`
-//             }
+//             credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 //         }
 //     );
 
@@ -88,10 +89,8 @@ document.getElementById("btnAbout").addEventListener("click", async (e) => {
             `${domain}/api/patient/update-profile`,
             {
                 method: "PUT",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
-                },
-                body: formData
+                credentials: "include",
+body: formData
             }
         );
 

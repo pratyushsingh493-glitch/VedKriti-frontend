@@ -10,7 +10,10 @@
 //         `${domain}/api/fetch-doctor?id=${localStorage.getItem("docID")}`,
 //         {
 //             method: "GET",
-//             headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}
+//             credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 //         }
 //     );
 

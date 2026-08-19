@@ -894,12 +894,8 @@ footer h2 {
     color: var(--accent-dark);
 }
 
-.booking-card-actions {
-    display: flex;
-    justify-content: flex-end;
-    padding-top: 1rem;
-    border-top: 1px dashed var(--border);
-}
+
+
 
 .join-conference-btn {
     background: var(--accent);
@@ -1115,6 +1111,9 @@ footer h2 {
 /* Consultation-type booking dialog */
 
 .booking-dialog {
+    position: fixed;
+    inset: 0;
+    margin: auto;
     width: min(92vw, 560px);
     max-height: 90vh;
     padding: 0;
@@ -2528,3 +2527,251 @@ footer h2 {
         transform: rotate(360deg);
     }
 }
+
+/* =========================================================
+   CANCEL & RESCHEDULE — BOOKING CARD ACTIONS
+========================================================= */
+
+.booking-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border);
+}
+
+.reschedule-btn,
+.cancel-booking-btn {
+    min-height: 38px;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    border: 1px solid;
+    transition: background-color 180ms ease, transform 120ms ease, box-shadow 180ms ease;
+    cursor: pointer;
+}
+
+.reschedule-btn {
+    color: var(--accent-dark);
+    background: rgba(46, 185, 194, 0.1);
+    border-color: rgba(46, 185, 194, 0.4);
+}
+
+.reschedule-btn:hover {
+    background: rgba(46, 185, 194, 0.2);
+    transform: translateY(-1px);
+}
+
+.cancel-booking-btn {
+    color: var(--danger);
+    background: rgba(180, 35, 24, 0.07);
+    border-color: rgba(180, 35, 24, 0.35);
+}
+
+.cancel-booking-btn:hover {
+    background: rgba(180, 35, 24, 0.14);
+    transform: translateY(-1px);
+}
+
+/* Danger button (used inside cancel dialog) */
+.danger-button {
+    min-height: 44px;
+    padding: 0.7rem 1.1rem;
+    border-radius: 6px;
+    font-weight: 800;
+    color: #fff;
+    background: var(--danger);
+    border: 1px solid var(--danger);
+    cursor: pointer;
+    transition: background-color 180ms ease, opacity 180ms ease;
+}
+
+.danger-button:hover {
+    background: #8f1a10;
+}
+
+.danger-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+/* =========================================================
+   CANCEL BOOKING DIALOG EXTRAS
+========================================================= */
+
+.cancel-warning-box {
+    padding: 1rem 1.1rem;
+    background: rgba(180, 35, 24, 0.07);
+    border: 1px solid rgba(180, 35, 24, 0.25);
+    border-radius: 8px;
+    color: var(--danger);
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+}
+
+.optional-label {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+#cancelReason {
+    display: block;
+    width: 100%;
+    min-height: 90px;
+    padding: 0.75rem 0.9rem;
+    color: var(--ink);
+    background: var(--soft);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font: inherit;
+    font-size: 0.93rem;
+    line-height: 1.55;
+    resize: vertical;
+    outline: none;
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+#cancelReason:focus {
+    border-color: var(--accent-dark);
+    box-shadow: 0 0 0 3px rgba(46, 185, 194, 0.14);
+}
+
+/* =========================================================
+   RESCHEDULE DIALOG EXTRAS
+========================================================= */
+
+.reschedule-dialog {
+    width: min(96vw, 860px);
+}
+
+.reschedule-instruction {
+    margin-bottom: 0.75rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+}
+
+.reschedule-carousel {
+    max-height: 42vh;
+    overflow-y: auto;
+    padding-bottom: 0.5rem;
+    /* horizontal scroll for date cards, same as main availability carousel */
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 1rem;
+    scrollbar-width: thin;
+    padding: 0.5rem 0 0.75rem;
+}
+
+/* Slot box click-selection highlight inside reschedule dialog */
+.reschedule-slot-box {
+    transition: outline 120ms ease, background-color 120ms ease;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+.reschedule-slot-box:hover {
+    outline-color: rgba(46, 185, 194, 0.5);
+}
+
+.reschedule-slot-box.selected-reschedule-slot {
+    outline-color: var(--accent-dark);
+    background: rgba(46, 185, 194, 0.12) !important;
+}
+
+/* Selected slot preview strip */
+.reschedule-selected-preview {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    background: rgba(46, 185, 194, 0.08);
+    border: 1px solid rgba(46, 185, 194, 0.3);
+    border-radius: 8px;
+}
+
+.reschedule-preview-label {
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.reschedule-preview-info {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.consultation-type-select-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.consultation-type-select-row .form-label {
+    margin: 0;
+    white-space: nowrap;
+}
+
+#rescheduleConsultationType {
+    flex: 1;
+    min-height: 40px;
+    padding: 0 0.75rem;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 180ms ease;
+}
+
+#rescheduleConsultationType:focus {
+    border-color: var(--accent-dark);
+}
+
+@media (max-width: 600px) {
+    .booking-card-actions {
+        justify-content: flex-start;
+    }
+
+    .reschedule-btn,
+    .cancel-booking-btn {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+
+    .reschedule-dialog {
+        width: min(96vw, 860px);
+    }
+
+    .reschedule-carousel {
+        max-height: 38vh;
+    }
+
+    .consultation-type-select-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

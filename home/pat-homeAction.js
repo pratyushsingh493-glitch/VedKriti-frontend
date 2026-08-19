@@ -15,7 +15,11 @@ const ENDPOINTS = {
         `${domain}/api/booking/agora-token?bookingId=${encodeURIComponent(bookingId)}`,
     takeFeedback: (bookingId) =>
         `${domain}/api/booking/take-feedback?id=${encodeURIComponent(bookingId)}`,
-    getReports: `${domain}/api/report/get-reports`
+    getReports: `${domain}/api/report/get-reports`,
+    cancelBooking: (bookingId) =>
+        `${domain}/api/booking/cancel?id=${encodeURIComponent(bookingId)}`,
+    rescheduleBooking: (bookingId) =>
+        `${domain}/api/booking/reschedule?id=${encodeURIComponent(bookingId)}`
 };
 
 /* =========================================================
@@ -94,42 +98,6 @@ const formatPrice = (price) => {
         maximumFractionDigits: 0
     }).format(number);
 };
-
-/* =========================================================
-   TAB SWITCHING
-========================================================= */
-
-const tabContainer = $(".tabs-container");
-const panels = $$(".tabs_panel > section");
-
-const openTab = (panelId) => {
-    panels.forEach((panel) => {
-        panel.hidden = panel.id !== panelId;
-    });
-
-    $$("a", tabContainer).forEach((link) => {
-        const isActive = link.getAttribute("href") === `#${panelId}`;
-        link.classList.toggle("active", isActive);
-        link.setAttribute("aria-selected", String(isActive));
-    });
-
-    if (panelId === "consultations") {
-        loadUpcomingConsultations();
-    } else if (panelId === "bookings") {
-        loadPastBookings();
-    } else if (panelId === "reports") {
-        loadReports();
-    }
-};
-
-tabContainer.addEventListener("click", (event) => {
-    const link = event.target.closest("a");
-    if (!link) return;
-    const href = link.getAttribute("href");
-    if (!href || !href.startsWith("#")) return;
-    event.preventDefault();
-    openTab(href.slice(1));
-});
 
 /* =========================================================
    SEARCH DOCTORS (TAB 1)
@@ -218,44 +186,52 @@ const renderDoctors = (doctors) => {
     searchResults.innerHTML = doctors.map(renderDoctorCard).join("");
 };
 
-$("#signinForm").addEventListener("submit", async (event) => {
-    event.preventDefault();
+const searchDoctors = async (customFilters = null) => {
     const searchButton = $("#search");
     const errorElement = $("#err");
     const searchResults = $("#searchResults");
-    errorElement.textContent = "";
+    if (errorElement) errorElement.textContent = "";
 
-    const minPriceText = $("#minPrice").value.trim();
-    const maxPriceText = $("#maxPrice").value.trim();
-    const minRatingText = $("#minRating").value;
+    let filters;
+    if (customFilters !== null && typeof customFilters === "object") {
+        filters = customFilters;
+    } else {
+        const minPriceText = $("#minPrice") ? $("#minPrice").value.trim() : "";
+        const maxPriceText = $("#maxPrice") ? $("#maxPrice").value.trim() : "";
+        const minRatingText = $("#minRating") ? $("#minRating").value : "";
 
-    const filters = {
-        city: $("#city").value.trim(),
-        specialization: $("#speciality").value.trim(),
-        facilityName: $("#facility").value.trim(),
-        name: $("#name").value.trim(),
-        date: $("#date").value,
-        minFee: minPriceText === "" ? null : Number(minPriceText),
-        maxFee: maxPriceText === "" ? null : Number(maxPriceText),
-        minRating: minRatingText === "" ? null : Number(minRatingText)
-    };
+        filters = {
+            city: $("#city") ? $("#city").value.trim() : "",
+            specialization: $("#speciality") ? $("#speciality").value.trim() : "",
+            facilityName: $("#facility") ? $("#facility").value.trim() : "",
+            name: $("#name") ? $("#name").value.trim() : "",
+            date: $("#date") ? $("#date").value : "",
+            minFee: minPriceText === "" ? null : Number(minPriceText),
+            maxFee: maxPriceText === "" ? null : Number(maxPriceText),
+            minRating: minRatingText === "" ? null : Number(minRatingText)
+        };
 
-    if (filters.minFee !== null && filters.minFee < 0) {
-        errorElement.textContent = "Minimum price cannot be negative.";
-        return;
+        if (filters.minFee !== null && filters.minFee < 0) {
+            if (errorElement) errorElement.textContent = "Minimum price cannot be negative.";
+            return;
+        }
+        if (filters.maxFee !== null && filters.maxFee < 0) {
+            if (errorElement) errorElement.textContent = "Maximum price cannot be negative.";
+            return;
+        }
+        if (filters.minFee !== null && filters.maxFee !== null && filters.minFee > filters.maxFee) {
+            if (errorElement) errorElement.textContent = "Minimum price cannot be greater than maximum price.";
+            return;
+        }
     }
-    if (filters.maxFee !== null && filters.maxFee < 0) {
-        errorElement.textContent = "Maximum price cannot be negative.";
-        return;
-    }
-    if (filters.minFee !== null && filters.maxFee !== null && filters.minFee > filters.maxFee) {
-        errorElement.textContent = "Minimum price cannot be greater than maximum price.";
-        return;
-    }
 
-    searchButton.disabled = true;
-    searchButton.textContent = "Searching...";
-    searchResults.innerHTML = renderLoader("Searching for doctors...");
+    if (searchButton) {
+        searchButton.disabled = true;
+        searchButton.textContent = "Searching...";
+    }
+    if (searchResults) {
+        searchResults.innerHTML = renderLoader("Searching for doctors...");
+    }
 
     try {
         const params = new URLSearchParams();
@@ -263,14 +239,20 @@ $("#signinForm").addEventListener("submit", async (event) => {
         if (filters.facilityName) params.set("facilityName", filters.facilityName);
         if (filters.specialization) params.set("specialization", filters.specialization);
         if (filters.name) params.set("name", filters.name);
-        if (filters.minFee !== null) params.set("minFee", filters.minFee);
-        if (filters.maxFee !== null) params.set("maxFee", filters.maxFee);
-        if (filters.minRating !== null) params.set("minRating", filters.minRating);
+        if (filters.minFee !== null && filters.minFee !== undefined) params.set("minFee", filters.minFee);
+        if (filters.maxFee !== null && filters.maxFee !== undefined) params.set("maxFee", filters.maxFee);
+        if (filters.minRating !== null && filters.minRating !== undefined) params.set("minRating", filters.minRating);
         if (filters.date) params.set("date", filters.date);
 
-        const response = await fetch(`${ENDPOINTS.findDoctor}?${params}`, {
+        const queryString = params.toString();
+        const url = queryString ? `${ENDPOINTS.findDoctor}?${queryString}` : ENDPOINTS.findDoctor;
+
+        const response = await fetch(url, {
             method: "GET",
-            headers: authHeaders()
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
         });
 
         const data = await readJSON(response);
@@ -282,19 +264,82 @@ $("#signinForm").addEventListener("submit", async (event) => {
         const doctors = data.data || [];
         renderDoctors(doctors);
     } catch (error) {
-        errorElement.textContent = error.message;
-        searchResults.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">!</div>
-                <h2>No doctors found</h2>
-                <p>${escapeHTML(error.message)}</p>
-            </div>
-        `;
+        if (errorElement) errorElement.textContent = error.message;
+        if (searchResults) {
+            searchResults.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">!</div>
+                    <h2>No doctors found</h2>
+                    <p>${escapeHTML(error.message)}</p>
+                </div>
+            `;
+        }
     } finally {
-        searchButton.disabled = false;
-        searchButton.textContent = "Search Doctors";
+        if (searchButton) {
+            searchButton.disabled = false;
+            searchButton.textContent = "Search Doctors";
+        }
     }
+};
+
+/* =========================================================
+   TAB SWITCHING
+========================================================= */
+
+const tabContainer = $(".tabs-container");
+const panels = $$(".tabs_panel > section");
+
+const openTab = (panelId) => {
+    panels.forEach((panel) => {
+        panel.hidden = panel.id !== panelId;
+    });
+
+    $$("a", tabContainer).forEach((link) => {
+        const isActive = link.getAttribute("href") === `#${panelId}`;
+        link.classList.toggle("active", isActive);
+        link.setAttribute("aria-selected", String(isActive));
+    });
+
+    if (panelId === "find") {
+        const searchContainer = $("#doctorSearchContainer");
+        const profileContainer = $("#doctorProfileContainer");
+        if (searchContainer) searchContainer.hidden = false;
+        if (profileContainer) profileContainer.hidden = true;
+        searchDoctors({
+            city: null,
+            specialization: null,
+            facilityName: null,
+            name: null,
+            date: null,
+            minFee: null,
+            maxFee: null,
+            minRating: null
+        });
+    } else if (panelId === "consultations") {
+        loadUpcomingConsultations();
+    } else if (panelId === "bookings") {
+        loadPastBookings();
+    } else if (panelId === "reports") {
+        loadReports();
+    }
+};
+
+tabContainer.addEventListener("click", (event) => {
+    const link = event.target.closest("a");
+    if (!link) return;
+    const href = link.getAttribute("href");
+    if (!href || !href.startsWith("#")) return;
+    event.preventDefault();
+    openTab(href.slice(1));
 });
+
+const signinForm = $("#signinForm");
+if (signinForm) {
+    signinForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        await searchDoctors();
+    });
+}
 
 /* =========================================================
    DOCTOR PROFILE & AVAILABILITY VIEW (TAB 1 DETAIL)
@@ -311,8 +356,11 @@ const fetchDoctorProfile = async (doctorId, fallbackDoctor = null) => {
     try {
         const response = await fetch(ENDPOINTS.doctorProfile(doctorId), {
             method: "GET",
-            headers: authHeaders()
-        });
+            credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+});
         const data = await readJSON(response);
 
         if (!response.ok) {
@@ -639,9 +687,13 @@ $("#doctorProfileContainer").addEventListener("click", async (event) => {
         const url = ENDPOINTS.bookDoctor(docId, consultationType);
         const response = await fetch(url, {
             method: "POST",
-            headers: authHeaders(true),
+            credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
             body: JSON.stringify({ date, slot })
         });
+
 
         const data = await readJSON(response);
 
@@ -649,8 +701,18 @@ $("#doctorProfileContainer").addEventListener("click", async (event) => {
             throw new Error(data.message || "Booking failed.");
         }
 
-        setMessage(msgEl, data.message || "Appointment booked successfully!", "success");
-        globalThis.alert(data.message || "Appointment booked successfully!");
+
+
+        setMessage(msgEl, data.message || "Appointment slot reserved successfully!", "success");
+        globalThis.alert(data.message || "Appointment slot reserved successfully!");
+
+        localStorage.setItem("orderID",data.data.payment.orderId);
+        localStorage.setItem("amount",data.data.payment.amount);
+        localStorage.setItem("currency",data.data.payment.currency);
+        localStorage.setItem("keyID",data.data.payment.keyId);
+        localStorage.setItem("bookingID",data.data.bookingId);
+
+        globalThis.location.href = "../payments/checkout.html";
 
         // Open Upcoming Consultations tab
         openTab("consultations");
@@ -685,8 +747,10 @@ const renderUpcomingCard = (booking) => {
 
     const docName = booking.docID?.name || booking.doctorName || booking.docName || "Doctor";
     const facility = booking.docID?.facilityName || booking.facilityName || "";
+    const docId = booking.docID?._id || booking.docID || "";
 
     const isOnline = consultationType === "ONLINE";
+    const canModify = ["PENDING", "CONFIRMED"].includes(status);
 
     return `
         <article class="booking-card" data-booking-id="${escapeHTML(bookingId)}">
@@ -703,20 +767,45 @@ const renderUpcomingCard = (booking) => {
                     ${facility ? `<p> <strong>Facility:</strong> ${escapeHTML(facility)}</p>` : ""}
                 </div>
             </div>
-            ${isOnline ? `
+            ${(isOnline || canModify) ? `
                 <div class="booking-card-actions">
-                    <button
-                        class="join-conference-btn"
-                        type="button"
-                        data-booking-id="${escapeHTML(bookingId)}"
-                    >
-                        📹 Join Consultation
-                    </button>
+                    ${isOnline ? `
+                        <button
+                            class="join-conference-btn"
+                            type="button"
+                            data-booking-id="${escapeHTML(bookingId)}"
+                        >
+                            📹 Join Consultation
+                        </button>
+                    ` : ""}
+                    ${canModify ? `
+                        <button
+                            class="reschedule-btn"
+                            type="button"
+                            data-booking-id="${escapeHTML(bookingId)}"
+                            data-doc-id="${escapeHTML(String(docId))}"
+                            data-doc-name="${escapeHTML(docName)}"
+                            data-current-date="${escapeHTML(booking.date ? String(booking.date).slice(0, 10) : "")}"
+                            data-current-slot="${escapeHTML(booking.slot || "")}"
+                            data-current-type="${escapeHTML(consultationType)}"
+                        >
+                            🗓 Reschedule
+                        </button>
+                        <button
+                            class="cancel-booking-btn"
+                            type="button"
+                            data-booking-id="${escapeHTML(bookingId)}"
+                            data-doc-name="${escapeHTML(docName)}"
+                        >
+                            ✕ Cancel
+                        </button>
+                    ` : ""}
                 </div>
             ` : ""}
         </article>
     `;
 };
+
 
 const loadUpcomingConsultations = async () => {
     const results = $("#consultationResults");
@@ -733,8 +822,11 @@ const loadUpcomingConsultations = async () => {
     try {
         const response = await fetch(`${ENDPOINTS.upcoming}`, {
             method: "GET",
-            headers: authHeaders()
-        });
+            credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+});
         const data = await readJSON(response);
 
         if (!response.ok) {
@@ -786,8 +878,11 @@ $("#consultationResults").addEventListener("click", async (event) => {
     try {
         const response = await fetch(ENDPOINTS.agoraToken(bookingId), {
             method: "GET",
-            headers: authHeaders()
-        });
+            credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+});
         const data = await readJSON(response);
 
         if (!response.ok) {
@@ -814,6 +909,286 @@ $("#consultationResults").addEventListener("click", async (event) => {
         setMessage($("#consultationMessage"), err.message, "error");
         btn.disabled = false;
         btn.textContent = " Join Consultation";
+    }
+});
+
+/* =========================================================
+   TAB 2: CANCEL BOOKING
+========================================================= */
+
+const cancelBookingDialog = $("#cancelBookingDialog");
+const confirmCancelBtn = $("#confirmCancelBooking");
+let _cancelBookingId = null;
+
+const openCancelDialog = (bookingId, docName) => {
+    _cancelBookingId = bookingId;
+    $("#cancelReason").value = "";
+    $("#cancelBookingError").textContent = "";
+    cancelBookingDialog.showModal();
+};
+
+const closeCancelDialog = () => {
+    _cancelBookingId = null;
+    cancelBookingDialog.close();
+};
+
+$("#closeCancelDialog").addEventListener("click", closeCancelDialog);
+$("#closeCancelDialogBtn").addEventListener("click", closeCancelDialog);
+cancelBookingDialog.addEventListener("click", (e) => {
+    if (e.target === cancelBookingDialog) closeCancelDialog();
+});
+
+confirmCancelBtn.addEventListener("click", async () => {
+    if (!_cancelBookingId) return;
+
+    const reason = $("#cancelReason").value.trim();
+    const errEl = $("#cancelBookingError");
+    errEl.textContent = "";
+
+    confirmCancelBtn.disabled = true;
+    confirmCancelBtn.textContent = "Cancelling...";
+
+    try {
+        const body = reason ? { reason } : {};
+        const response = await fetch(ENDPOINTS.cancelBooking(_cancelBookingId), {
+            method: "PUT",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+        const data = await readJSON(response);
+
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to cancel booking.");
+        }
+
+        closeCancelDialog();
+        setMessage($("#consultationMessage"), data.message || "Booking cancelled successfully.", "success");
+        await loadUpcomingConsultations();
+    } catch (err) {
+        errEl.textContent = err.message;
+    } finally {
+        confirmCancelBtn.disabled = false;
+        confirmCancelBtn.textContent = "Yes, Cancel Booking";
+    }
+});
+
+/* =========================================================
+   TAB 2: RESCHEDULE BOOKING
+========================================================= */
+
+const rescheduleDialog = $("#rescheduleDialog");
+const confirmRescheduleBtn = $("#confirmReschedule");
+let _rescheduleBookingId = null;
+let _rescheduleSelectedDate = null;
+let _rescheduleSelectedSlot = null;
+let _rescheduleOriginalType = "ONLINE";
+
+const closeRescheduleDialog = () => {
+    _rescheduleBookingId = null;
+    _rescheduleSelectedDate = null;
+    _rescheduleSelectedSlot = null;
+    rescheduleDialog.close();
+};
+
+$("#closeRescheduleDialog").addEventListener("click", closeRescheduleDialog);
+$("#closeRescheduleDialogBtn").addEventListener("click", closeRescheduleDialog);
+rescheduleDialog.addEventListener("click", (e) => {
+    if (e.target === rescheduleDialog) closeRescheduleDialog();
+});
+
+const renderRescheduleSlot = (item, doctor) => {
+    return ["MORNING", "AFTERNOON", "EVENING"].map(slotKey => {
+        const slotData = item.slots[slotKey];
+        const available = slotData.capacity - slotData.bookings;
+        const isAvailable = available > 0 && !item.isHoliday;
+        const statusText = item.isHoliday
+            ? "Doctor Holiday"
+            : (isAvailable ? `${available} available` : "Waiting list");
+
+        return `
+            <div class="slot-box ${isAvailable ? "slot-available" : "slot-waiting"} reschedule-slot-box"
+                data-date="${escapeHTML(item.dateStr)}"
+                data-slot="${escapeHTML(slotKey)}"
+                data-display-date="${escapeHTML(item.displayDate)}"
+                style="cursor:pointer;"
+            >
+                <div class="slot-header-row">
+                    <span class="slot-name">${slotKey}</span>
+                    <span class="slot-badge ${isAvailable ? "badge-available" : "badge-waiting"}">
+                        ${escapeHTML(statusText)}
+                    </span>
+                </div>
+                <div class="slot-capacity-info">
+                    <span class="capacity-label">Capacity: ${slotData.capacity}</span>
+                    <span class="booked-label">Booked: ${slotData.bookings}</span>
+                </div>
+            </div>
+        `;
+    }).join("");
+};
+
+const renderRescheduleAvailability = (datesList, doctor) => {
+    return datesList.map(item => `
+        <div class="date-card ${item.isHoliday ? "holiday-card" : ""}">
+            <div class="date-header">
+                <h3>${escapeHTML(item.displayDate)}</h3>
+                ${item.isHoliday ? `<span class="badge holiday-badge">Holiday</span>` : ""}
+            </div>
+            <div class="slots-container">
+                ${renderRescheduleSlot(item, doctor)}
+            </div>
+        </div>
+    `).join("");
+};
+
+const openRescheduleDialog = async (bookingId, docId, docName, currentDate, currentSlot, currentType) => {
+    _rescheduleBookingId = bookingId;
+    _rescheduleSelectedDate = null;
+    _rescheduleSelectedSlot = null;
+    _rescheduleOriginalType = currentType || "ONLINE";
+
+    // Populate current info summary
+    $("#rescheduleDoctor").textContent = `Dr. ${docName}`;
+    $("#rescheduleCurrentDate").textContent = formatDate(currentDate);
+    $("#rescheduleCurrentSlot").textContent = currentSlot || "N/A";
+    $("#rescheduleCurrentType").textContent = currentType || "N/A";
+
+    // Reset selection preview
+    const preview = $("#rescheduleSelectedSlotPreview");
+    preview.hidden = true;
+    confirmRescheduleBtn.disabled = true;
+    $("#rescheduleNewDate").textContent = "—";
+    $("#rescheduleNewSlot").textContent = "—";
+    $("#rescheduleError").textContent = "";
+
+    // Set consultation type default to original
+    const typeSelect = $("#rescheduleConsultationType");
+    typeSelect.value = _rescheduleOriginalType;
+
+    // Clear previous availability carousel
+    const carousel = $("#rescheduleAvailabilityCarousel");
+    carousel.innerHTML = "";
+
+    // Show loader, open dialog
+    const loader = $("#rescheduleAvailabilityLoader");
+    loader.hidden = false;
+    rescheduleDialog.showModal();
+
+    // Remove previous slot selections
+    $$(".reschedule-slot-box.selected-reschedule-slot").forEach(el => el.classList.remove("selected-reschedule-slot"));
+
+    try {
+        // Use the doctor profile endpoint to get availability
+        const response = await fetch(ENDPOINTS.doctorProfile(docId), {
+            method: "GET",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" }
+        });
+        const data = await readJSON(response);
+
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to load doctor availability.");
+        }
+
+        const profileData = data.data;
+        const doctor = profileData.doctor;
+        const availabilityList = profileData.availability || [];
+        const datesList = buildDatesList(availabilityList, doctor);
+
+        loader.hidden = true;
+        carousel.innerHTML = renderRescheduleAvailability(datesList, doctor);
+
+    } catch (err) {
+        loader.hidden = true;
+        carousel.innerHTML = `<p class="error-message" style="padding:1rem;">${escapeHTML(err.message)}</p>`;
+    }
+};
+
+// Click handler for slot selection inside reschedule dialog
+$("#rescheduleAvailabilityCarousel").addEventListener("click", (event) => {
+    const slotBox = event.target.closest(".reschedule-slot-box");
+    if (!slotBox) return;
+
+    // Deselect previous
+    $$(".reschedule-slot-box.selected-reschedule-slot", rescheduleDialog).forEach(el =>
+        el.classList.remove("selected-reschedule-slot")
+    );
+
+    // Select clicked
+    slotBox.classList.add("selected-reschedule-slot");
+
+    _rescheduleSelectedDate = slotBox.dataset.date;
+    _rescheduleSelectedSlot = slotBox.dataset.slot;
+    const displayDate = slotBox.dataset.displayDate;
+
+    // Show preview
+    const preview = $("#rescheduleSelectedSlotPreview");
+    preview.hidden = false;
+    $("#rescheduleNewDate").textContent = displayDate;
+    $("#rescheduleNewSlot").textContent = _rescheduleSelectedSlot;
+    confirmRescheduleBtn.disabled = false;
+});
+
+confirmRescheduleBtn.addEventListener("click", async () => {
+    if (!_rescheduleBookingId || !_rescheduleSelectedDate || !_rescheduleSelectedSlot) return;
+
+    const consultationType = $("#rescheduleConsultationType").value;
+    const errEl = $("#rescheduleError");
+    errEl.textContent = "";
+
+    confirmRescheduleBtn.disabled = true;
+    confirmRescheduleBtn.textContent = "Rescheduling...";
+
+    try {
+        const response = await fetch(ENDPOINTS.rescheduleBooking(_rescheduleBookingId), {
+            method: "PUT",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                newDate: _rescheduleSelectedDate,
+                newSlot: _rescheduleSelectedSlot,
+                consultationType
+            })
+        });
+        const data = await readJSON(response);
+
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to reschedule booking.");
+        }
+
+        closeRescheduleDialog();
+        setMessage($("#consultationMessage"), data.message || "Appointment rescheduled successfully!", "success");
+        await loadUpcomingConsultations();
+    } catch (err) {
+        errEl.textContent = err.message;
+        confirmRescheduleBtn.disabled = false;
+        confirmRescheduleBtn.textContent = "Confirm Reschedule";
+    }
+});
+
+// Delegated click handler on consultationResults for Cancel & Reschedule buttons
+$("#consultationResults").addEventListener("click", (event) => {
+    // Cancel button
+    const cancelBtn = event.target.closest(".cancel-booking-btn");
+    if (cancelBtn) {
+        const bookingId = cancelBtn.dataset.bookingId;
+        const docName = cancelBtn.dataset.docName || "Doctor";
+        openCancelDialog(bookingId, docName);
+        return;
+    }
+
+    // Reschedule button
+    const rescheduleBtn = event.target.closest(".reschedule-btn");
+    if (rescheduleBtn) {
+        const bookingId = rescheduleBtn.dataset.bookingId;
+        const docId = rescheduleBtn.dataset.docId;
+        const docName = rescheduleBtn.dataset.docName || "Doctor";
+        const currentDate = rescheduleBtn.dataset.currentDate;
+        const currentSlot = rescheduleBtn.dataset.currentSlot;
+        const currentType = rescheduleBtn.dataset.currentType;
+        openRescheduleDialog(bookingId, docId, docName, currentDate, currentSlot, currentType);
+        return;
     }
 });
 
@@ -928,8 +1303,11 @@ const loadPastBookings = async () => {
     try {
         const response = await fetch(`${ENDPOINTS.past}`, {
             method: "GET",
-            headers: authHeaders()
-        });
+            credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+});
         const data = await readJSON(response);
 
         if (!response.ok) {
@@ -998,8 +1376,11 @@ $("#pastBookingResults").addEventListener("submit", async (event) => {
         const url = ENDPOINTS.takeFeedback(bookingId);
         const response = await fetch(url, {
             method: "PUT",
-            headers: authHeaders(true),
-            body: JSON.stringify({ rating, feedback })
+            credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+body: JSON.stringify({ rating, feedback })
         });
         const data = await readJSON(response);
 
@@ -1056,8 +1437,11 @@ const loadReports = async () => {
     try {
         const response = await fetch(ENDPOINTS.getReports, {
             method: "GET",
-            headers: authHeaders()
-        });
+            credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+});
         const data = await readJSON(response);
 
         if (!response.ok) {

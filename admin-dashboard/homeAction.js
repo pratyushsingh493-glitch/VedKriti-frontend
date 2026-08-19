@@ -316,8 +316,11 @@ const loadStatistics = async () => {
             ENDPOINTS.statistics,
             {
                 method: "GET",
-                headers: authHeaders()
-            }
+                credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+}
         );
 
         const data =
@@ -588,8 +591,11 @@ const findDoctors = async () => {
             `${ENDPOINTS.findDoctors}?${parameters}`,
             {
                 method: "GET",
-                headers: authHeaders()
-            }
+                credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+}
         );
 
         const data =
@@ -703,8 +709,11 @@ $("#doctorResults").addEventListener(
                 ),
                 {
                     method: "DELETE",
-                    headers: authHeaders()
-                }
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+}
             );
 
             const data =
@@ -789,8 +798,11 @@ $("#pendingDoctorResults").addEventListener(
                 ),
                 {
                     method: "GET",
-                    headers: authHeaders()
-                }
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+}
             );
 
             const data =
@@ -1073,8 +1085,11 @@ const loadPendingDoctors = async () => {
             ENDPOINTS.pendingDoctors,
             {
                 method: "GET",
-                headers: authHeaders()
-            }
+                credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+}
         );
 
         const data =
@@ -1172,10 +1187,11 @@ $("#pendingDoctorResults").addEventListener(
                 {
                     method: "PATCH",
 
-                    headers:
-                        authHeaders(true),
-
-                    body:
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+body:
                         JSON.stringify({
                             verified,
                             verificationNote

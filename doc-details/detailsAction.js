@@ -282,11 +282,11 @@ document
                 `${domain}/api/doctor/get-practiceLocation`,
                 {
                     method: "GET",
+                    credentials: "include",
                     headers: {
-                        Authorization:
-                            `Bearer ${getToken()}`
-                    }
-                }
+                        "Content-Type": "application/json"
+                    },
+}
             );
 
             const data =
@@ -387,15 +387,11 @@ document
                 {
                     method: "PUT",
 
+                    credentials: "include",
                     headers: {
-                        "Content-Type":
-                            "application/json",
-
-                        Authorization:
-                            `Bearer ${getToken()}`
+                        "Content-Type": "application/json"
                     },
-
-                    body: JSON.stringify({
+body: JSON.stringify({
                         city,
                         state,
                         country,
@@ -445,11 +441,11 @@ document
                 {
                     method: "GET",
 
+                    credentials: "include",
                     headers: {
-                        Authorization:
-                            `Bearer ${getToken()}`
-                    }
-                }
+                        "Content-Type": "application/json"
+                    },
+}
             );
 
             const data =
@@ -556,15 +552,11 @@ document
                 {
                     method: "PUT",
 
+                    credentials: "include",
                     headers: {
-                        "Content-Type":
-                            "application/json",
-
-                        Authorization:
-                            `Bearer ${getToken()}`
+                        "Content-Type": "application/json"
                     },
-
-                    body: JSON.stringify({
+body: JSON.stringify({
                         institute,
                         degreeType,
                         degreeName,
@@ -744,11 +736,11 @@ document
                 {
                     method: "GET",
 
+                    credentials: "include",
                     headers: {
-                        Authorization:
-                            `Bearer ${getToken()}`
-                    }
-                }
+                        "Content-Type": "application/json"
+                    },
+}
             );
 
             /*
@@ -917,15 +909,11 @@ experienceForm.addEventListener(
                 {
                     method: "POST",
 
+                    credentials: "include",
                     headers: {
-                        "Content-Type":
-                            "application/json",
-
-                        Authorization:
-                            `Bearer ${getToken()}`
+                        "Content-Type": "application/json"
                     },
-
-                    body: JSON.stringify({
+body: JSON.stringify({
                         experiences
                     })
                 }
@@ -975,11 +963,11 @@ document
                 {
                     method: "GET",
 
+                    credentials: "include",
                     headers: {
-                        Authorization:
-                            `Bearer ${getToken()}`
-                    }
-                }
+                        "Content-Type": "application/json"
+                    },
+}
             );
 
             const data =
@@ -1090,15 +1078,11 @@ document
                 {
                     method: "PUT",
 
+                    credentials: "include",
                     headers: {
-                        "Content-Type":
-                            "application/json",
-
-                        Authorization:
-                            `Bearer ${getToken()}`
+                        "Content-Type": "application/json"
                     },
-
-                    body: JSON.stringify({
+body: JSON.stringify({
                         morningCapacity,
                         afternoonCapacity,
                         eveningCapacity,
@@ -1145,11 +1129,11 @@ document
                 {
                     method: "GET",
 
+                    credentials: "include",
                     headers: {
-                        Authorization:
-                            `Bearer ${getToken()}`
-                    }
-                }
+                        "Content-Type": "application/json"
+                    },
+}
             );
 
             const data =
@@ -1249,12 +1233,8 @@ document
                 {
                     method: "PUT",
 
-                    headers: {
-                        Authorization:
-                            `Bearer ${getToken()}`
-                    },
-
-                    body: formData
+                    credentials: "include",
+body: formData
                 }
             );
 
@@ -1395,12 +1375,11 @@ document
                 {
                     method: "POST",
 
+                    credentials: "include",
                     headers: {
-                        Authorization:
-                            `Bearer ${getToken()}`
+                        "Content-Type": "application/json"
                     },
-
-                    body: medicalCertForm
+body: medicalCertForm
                 }
             );
 
@@ -1427,12 +1406,11 @@ document
                     {
                         method: "POST",
 
-                        headers: {
-                            Authorization:
-                                `Bearer ${getToken()}`
-                        },
-
-                        body: governmentIdForm
+                        credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+body: governmentIdForm
                     }
                 );
 

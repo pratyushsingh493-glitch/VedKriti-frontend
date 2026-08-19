@@ -258,8 +258,11 @@ const getProfileStatus = async (
     `${domain}${endpoint}`,
     {
         method: "GET",
-        credentials: "include"
-    }
+        credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+}
 );
 
         const result =
@@ -409,9 +412,9 @@ form.addEventListener(
         {
             method: "POST",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
             body: JSON.stringify(payload)
         }
     );

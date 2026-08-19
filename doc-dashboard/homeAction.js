@@ -700,9 +700,11 @@ const loadTodayConsultations = async () => {
             }`,
             {
                 method: "GET",
-                headers: authHeaders(),
-                credentials: "include"
-            }
+                credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+}
         );
 
         const data =
@@ -814,13 +816,11 @@ $("#emergencyCancelForm").addEventListener(
                 {
                     method: "PUT",
 
-                    headers:
-                        authHeaders(true),
-
-                    credentials:
-                        "include",
-
-                    body:
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+body:
                         JSON.stringify({
                             reason,
                             date: today
@@ -905,9 +905,11 @@ $("#searchForm").addEventListener(
                 }`,
                 {
                     method: "GET",
-                    headers: authHeaders(),
-                    credentials: "include"
-                }
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+}
             );
 
             const data =
@@ -1056,12 +1058,11 @@ todayResults.addEventListener(
                 {
                     method: "PUT",
 
-                    headers:
-                        authHeaders(),
-
-                    credentials:
-                        "include"
-                }
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+}
             );
 
             const data =
@@ -1127,10 +1128,8 @@ todayResults.addEventListener(
                 ENDPOINTS.uploadReport(patientId),
                 {
                     method: "PUT",
-                    headers: {
-                        Authorization: `Bearer ${getToken()}`
-                    },
-                    body: formData
+                    credentials: "include",
+body: formData
                 }
             );
 
@@ -1183,9 +1182,11 @@ const joinConference = async (
             ),
             {
                 method: "GET",
-                headers: authHeaders(),
-                credentials: "include"
-            }
+                credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+}
         );
 
         await console.log(response);
@@ -1905,9 +1906,11 @@ const loadDoctorProfile = async () => {
             ENDPOINTS.profile(doctorId),
             {
                 method: "GET",
-                headers: authHeaders(),
-                credentials: "include"
-            }
+                credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+}
         );
 
         const data =

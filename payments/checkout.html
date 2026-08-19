@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- <button id="rzp-button1">Pay</button> -->
+    <div class="loading-wave">
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+    </div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script type="module">
+import { domain } from "../config.js";
+var options = {
+    "key": localStorage.getItem("keyID") || "rzp_test_TRYzORwbdoZYPQ", // Enter the Key ID generated from the Dashboard
+    "amount": localStorage.getItem("amount") || 500, // Amount is in currency subunits.
+    "currency": localStorage.getItem("currency") || "INR",
+    "name": "DocSlot", //your business name
+    "description": "Test Transaction",
+    "image": "logo.webp",
+    "order_id": localStorage.getItem("orderID") || "order_TRdKvA9WREM6pV", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "modal": {
+        ondismiss:async function () {
+            console.log("User closed the payment popup");
+
+            // Your logic here
+            alert("Payment cancelled by user");
+            try{
+                const book = await fetch(`${domain}/api/payment/cancel`,{
+                    method : "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ bookingId: localStorage.getItem("bookingID") })
+                })
+                const data = await book.json();
+                if(!book.ok){
+                    throw new Error(data.message || "Unable to free the slot booked.");
+                }else{
+                    alert(data.message || "Cancellation Successful")
+                    globalThis.location.href = "../home/pat-home.html";
+                } 
+                // alert(response.razorpay_payment_id);
+                // alert(response.razorpay_order_id);
+                // alert(response.razorpay_signature)
+            }catch(error){
+                alert(error);
+                globalThis.location.href = "../home/pat-home.html"
+            }
+            globalThis.location.href = "../home/pat-home.html"
+
+            // Example: notify backend
+            // fetch("/payment-cancelled", { method: "POST" });
+        }
+    },
+    "handler":async function (response){
+
+        try{
+            const book = await fetch(`${domain}/api/payment/verify`,{
+                method : "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "bookingId": localStorage.getItem("bookingID"),
+                    "razorpayOrderId": response.razorpay_order_id,
+                    "razorpayPaymentId": response.razorpay_payment_id,
+                    "razorpaySignature": response.razorpay_signature
+                })
+            })
+            const data = await book.json();
+            if(!book.ok){
+                throw new Error(data.message || "Booking failed.");
+            }else{
+                alert(data.message || "Booking Successful")
+                globalThis.location.href = "../home/pat-home.html";
+            }
+            // alert(response.razorpay_payment_id);
+            // alert(response.razorpay_order_id);
+            // alert(response.razorpay_signature)
+        }catch(error){
+            alert(error);
+            globalThis.location.href = "../home/pat-home.html";
+        }
+    },
+    "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+        "name": "abc xyz", //your customer's name
+        "email": "abc.xyz@example.com", 
+        "contact": "+919999999999"  //Provide the customer's phone number for better conversion rates 
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response){
+        // alert(response.error.code);
+        // alert(response.error.description);
+        // alert(response.error.source);
+        // alert(response.error.step);
+        alert(response.error.reason);
+        // alert(response.error.metadata.order_id);
+        // alert(response.error.metadata.payment_id);
+});
+rzp1.open();
+// document.getElementById('rzp-button1').onclick = function(e){
+//     rzp1.open();
+//     e.preventDefault();
+// }
+</script>
+</body>
+</html>

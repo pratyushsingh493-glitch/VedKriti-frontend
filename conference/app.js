@@ -606,8 +606,11 @@ if (workflowStartBtn) {
         try {
             const response = await fetch(ENDPOINTS.start(currentBookingId, otp.trim()), {
                 method: "PUT",
-                headers: authHeaders()
-            });
+                credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+});
 
             const data = await readJSON(response);
 
@@ -645,10 +648,8 @@ if (workflowUploadInput) {
         try {
             const response = await fetch(ENDPOINTS.uploadReport(), {
                 method: "PUT",
-                headers: {
-                    Authorization: `Bearer ${getToken()}`
-                },
-                body: formData
+                credentials: "include",
+body: formData
             });
 
             const data = await readJSON(response);
@@ -681,8 +682,11 @@ if (workflowEndBtn) {
         try {
             const response = await fetch(ENDPOINTS.end(currentBookingId), {
                 method: "PUT",
-                headers: authHeaders()
-            });
+                credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+});
 
             const data = await readJSON(response);
 

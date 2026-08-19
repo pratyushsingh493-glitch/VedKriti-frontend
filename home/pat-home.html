@@ -169,6 +169,70 @@
         </form>
     </dialog>
 
+    <!-- Cancel Booking Dialog -->
+    <dialog id="cancelBookingDialog" class="booking-dialog">
+        <div class="booking-form">
+            <div class="booking-dialog-header">
+                <div><p class="eyebrow">Appointment action</p><h2>Cancel Booking</h2></div>
+                <button id="closeCancelDialog" class="dialog-close" type="button" aria-label="Close">&times;</button>
+            </div>
+            <div class="cancel-warning-box">
+                <p>⚠️ Are you sure you want to cancel this appointment? This action cannot be undone.</p>
+            </div>
+            <div class="form-group">
+                <label for="cancelReason" class="form-label">Reason for cancellation <span class="optional-label">(optional)</span></label>
+                <textarea id="cancelReason" rows="3" placeholder="e.g. Patient fell sick, scheduling conflict..."></textarea>
+            </div>
+            <p id="cancelBookingError" class="error-message" role="alert"></p>
+            <div class="booking-dialog-actions">
+                <button id="closeCancelDialogBtn" class="secondary-button" type="button">Keep Appointment</button>
+                <button id="confirmCancelBooking" class="danger-button" type="button">Yes, Cancel Booking</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Reschedule Booking Dialog -->
+    <dialog id="rescheduleDialog" class="booking-dialog reschedule-dialog">
+        <div class="booking-form">
+            <div class="booking-dialog-header">
+                <div><p class="eyebrow">Appointment action</p><h2>Reschedule Appointment</h2></div>
+                <button id="closeRescheduleDialog" class="dialog-close" type="button" aria-label="Close">&times;</button>
+            </div>
+            <div id="rescheduleCurrentInfo" class="selected-slot-summary">
+                <p>Doctor <strong id="rescheduleDoctor">—</strong></p>
+                <p>Current Date <strong id="rescheduleCurrentDate">—</strong></p>
+                <p>Current Slot <strong id="rescheduleCurrentSlot">—</strong></p>
+                <p>Current Type <strong id="rescheduleCurrentType">—</strong></p>
+            </div>
+            <div id="rescheduleAvailabilitySection">
+                <p class="reschedule-instruction">Select a new date and slot from the doctor's availability below:</p>
+                <div id="rescheduleAvailabilityLoader" class="loader-container" hidden>
+                    <div class="spinner"></div>
+                    <p class="loader-text">Loading availability...</p>
+                </div>
+                <div id="rescheduleAvailabilityCarousel" class="availability-carousel reschedule-carousel"></div>
+            </div>
+            <div id="rescheduleSelectedSlotPreview" class="reschedule-selected-preview" hidden>
+                <p class="reschedule-preview-label">New appointment:</p>
+                <div class="reschedule-preview-info">
+                    <span id="rescheduleNewDate">—</span> &bull; <span id="rescheduleNewSlot">—</span>
+                </div>
+                <div class="consultation-type-select-row">
+                    <label for="rescheduleConsultationType" class="form-label">Consultation type</label>
+                    <select id="rescheduleConsultationType">
+                        <option value="ONLINE">Online</option>
+                        <option value="OFFLINE">Offline</option>
+                    </select>
+                </div>
+            </div>
+            <p id="rescheduleError" class="error-message" role="alert"></p>
+            <div class="booking-dialog-actions">
+                <button id="closeRescheduleDialogBtn" class="secondary-button" type="button">Cancel</button>
+                <button id="confirmReschedule" class="primary-button" type="button" disabled>Confirm Reschedule</button>
+            </div>
+        </div>
+    </dialog>
+
     <footer>
         <img id="bottom" src="../media/DocSlot-icon.png" alt="DocSlot">
         <h2>#Delivering Quality Health Service</h2>
