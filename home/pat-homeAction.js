@@ -1,25 +1,25 @@
-import { domain } from "../config.js";
+import { apiFetch } from "../apiFetch.js";
 
 /* =========================================================
    API ENDPOINTS
 ========================================================= */
 
 const ENDPOINTS = {
-    findDoctor: `${domain}/api/doctor/find-doctor`,
-    doctorProfile: (id) => `${domain}/api/doctor/profile/${encodeURIComponent(id)}`,
+    findDoctor: `/api/doctor/find-doctor`,
+    doctorProfile: (id) => `/api/doctor/profile/${encodeURIComponent(id)}`,
     bookDoctor: (id, consultationType) =>
-        `${domain}/api/booking/book-doctor?id=${encodeURIComponent(id)}&consultationType=${encodeURIComponent(consultationType)}`,
-    upcoming: `${domain}/api/booking/patient-bookings`,
-    past: `${domain}/api/booking/patient-bookings`,
+        `/api/booking/book-doctor?id=${encodeURIComponent(id)}&consultationType=${encodeURIComponent(consultationType)}`,
+    upcoming: `/api/booking/patient-bookings`,
+    past: `/api/booking/patient-bookings`,
     agoraToken: (bookingId) =>
-        `${domain}/api/booking/agora-token?bookingId=${encodeURIComponent(bookingId)}`,
+        `/api/booking/agora-token?bookingId=${encodeURIComponent(bookingId)}`,
     takeFeedback: (bookingId) =>
-        `${domain}/api/booking/take-feedback?id=${encodeURIComponent(bookingId)}`,
-    getReports: `${domain}/api/report/get-reports`,
+        `/api/booking/take-feedback?id=${encodeURIComponent(bookingId)}`,
+    getReports: `/api/report/get-reports`,
     cancelBooking: (bookingId) =>
-        `${domain}/api/booking/cancel?id=${encodeURIComponent(bookingId)}`,
+        `/api/booking/cancel?id=${encodeURIComponent(bookingId)}`,
     rescheduleBooking: (bookingId) =>
-        `${domain}/api/booking/reschedule?id=${encodeURIComponent(bookingId)}`
+        `/api/booking/reschedule?id=${encodeURIComponent(bookingId)}`
 };
 
 /* =========================================================
@@ -247,9 +247,8 @@ const searchDoctors = async (customFilters = null) => {
         const queryString = params.toString();
         const url = queryString ? `${ENDPOINTS.findDoctor}?${queryString}` : ENDPOINTS.findDoctor;
 
-        const response = await fetch(url, {
+        const response = await apiFetch(url, {
             method: "GET",
-            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -354,13 +353,12 @@ const fetchDoctorProfile = async (doctorId, fallbackDoctor = null) => {
     searchContainer.hidden = true;
 
     try {
-        const response = await fetch(ENDPOINTS.doctorProfile(doctorId), {
+        const response = await apiFetch(ENDPOINTS.doctorProfile(doctorId), {
             method: "GET",
-            credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-});
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
         const data = await readJSON(response);
 
         if (!response.ok) {
@@ -685,12 +683,11 @@ $("#doctorProfileContainer").addEventListener("click", async (event) => {
 
     try {
         const url = ENDPOINTS.bookDoctor(docId, consultationType);
-        const response = await fetch(url, {
+        const response = await apiFetch(url, {
             method: "POST",
-            credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({ date, slot })
         });
 
@@ -820,13 +817,12 @@ const loadUpcomingConsultations = async () => {
     results.innerHTML = renderLoader("Loading upcoming consultations...");
 
     try {
-        const response = await fetch(`${ENDPOINTS.upcoming}`, {
+        const response = await apiFetch(`${ENDPOINTS.upcoming}`, {
             method: "GET",
-            credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-});
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
         const data = await readJSON(response);
 
         if (!response.ok) {
@@ -876,13 +872,12 @@ $("#consultationResults").addEventListener("click", async (event) => {
     btn.textContent = "Connecting...";
 
     try {
-        const response = await fetch(ENDPOINTS.agoraToken(bookingId), {
+        const response = await apiFetch(ENDPOINTS.agoraToken(bookingId), {
             method: "GET",
-            credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-});
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
         const data = await readJSON(response);
 
         if (!response.ok) {
@@ -950,9 +945,8 @@ confirmCancelBtn.addEventListener("click", async () => {
 
     try {
         const body = reason ? { reason } : {};
-        const response = await fetch(ENDPOINTS.cancelBooking(_cancelBookingId), {
+        const response = await apiFetch(ENDPOINTS.cancelBooking(_cancelBookingId), {
             method: "PUT",
-            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body)
         });
@@ -1080,9 +1074,8 @@ const openRescheduleDialog = async (bookingId, docId, docName, currentDate, curr
 
     try {
         // Use the doctor profile endpoint to get availability
-        const response = await fetch(ENDPOINTS.doctorProfile(docId), {
+        const response = await apiFetch(ENDPOINTS.doctorProfile(docId), {
             method: "GET",
-            credentials: "include",
             headers: { "Content-Type": "application/json" }
         });
         const data = await readJSON(response);
@@ -1141,9 +1134,8 @@ confirmRescheduleBtn.addEventListener("click", async () => {
     confirmRescheduleBtn.textContent = "Rescheduling...";
 
     try {
-        const response = await fetch(ENDPOINTS.rescheduleBooking(_rescheduleBookingId), {
+        const response = await apiFetch(ENDPOINTS.rescheduleBooking(_rescheduleBookingId), {
             method: "PUT",
-            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 newDate: _rescheduleSelectedDate,
@@ -1301,13 +1293,12 @@ const loadPastBookings = async () => {
     results.innerHTML = renderLoader("Loading past bookings...");
 
     try {
-        const response = await fetch(`${ENDPOINTS.past}`, {
+        const response = await apiFetch(`${ENDPOINTS.past}`, {
             method: "GET",
-            credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-});
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
         const data = await readJSON(response);
 
         if (!response.ok) {
@@ -1374,13 +1365,12 @@ $("#pastBookingResults").addEventListener("submit", async (event) => {
 
     try {
         const url = ENDPOINTS.takeFeedback(bookingId);
-        const response = await fetch(url, {
+        const response = await apiFetch(url, {
             method: "PUT",
-            credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-body: JSON.stringify({ rating, feedback })
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ rating, feedback })
         });
         const data = await readJSON(response);
 
@@ -1435,13 +1425,12 @@ const loadReports = async () => {
     results.innerHTML = renderLoader("Loading medical reports...");
 
     try {
-        const response = await fetch(ENDPOINTS.getReports, {
+        const response = await apiFetch(ENDPOINTS.getReports, {
             method: "GET",
-            credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-});
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
         const data = await readJSON(response);
 
         if (!response.ok) {

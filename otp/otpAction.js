@@ -1,4 +1,5 @@
 import { domain } from "../config.js";
+import { apiFetch } from "../apiFetch.js";
 
 const form = document.getElementById("otpForm");
 const submit = document.querySelector(".verifyButton");
@@ -100,20 +101,18 @@ form.addEventListener("submit", async (event) => {
             );
 
             const url =
-                `${ENDPOINTS.START_CONSULTATION}` +
+                `/api/booking/start-consultation` +
                 `?id=${encodeURIComponent(id)}` +
                 `&otp=${encodeURIComponent(otp)}`;
 
-            response = await fetch(
+            response = await apiFetch(
                 url,
                 {
                     method: "PUT",
-
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
-                    },
-}
+                    }
+                }
             );
         } else {
             response = await fetch(

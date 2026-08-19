@@ -1,4 +1,4 @@
-import { domain } from "../config.js";
+import { apiFetch } from "../apiFetch.js";
 
 /* =========================================================
    CONFERENCE CREDENTIALS
@@ -96,11 +96,11 @@ const currentBookingId = localStorage.getItem("currentConsultationBookingId");
 
 const ENDPOINTS = {
     start: (bookingId, otp) =>
-        `${domain}/api/booking/start-consultation?id=${encodeURIComponent(bookingId)}&otp=${encodeURIComponent(otp)}`,
+        `/api/booking/start-consultation?id=${encodeURIComponent(bookingId)}&otp=${encodeURIComponent(otp)}`,
     end: (bookingId) =>
-        `${domain}/api/booking/end-consultation?id=${encodeURIComponent(bookingId)}`,
+        `/api/booking/end-consultation?id=${encodeURIComponent(bookingId)}`,
     uploadReport: () =>
-        `${domain}/api/report/upload-report?id=unknown`
+        `/api/report/upload-report?id=unknown`
 };
 
 const getToken = () => localStorage.getItem("token") || "";
@@ -604,13 +604,12 @@ if (workflowStartBtn) {
         showConferenceError("");
 
         try {
-            const response = await fetch(ENDPOINTS.start(currentBookingId, otp.trim()), {
+            const response = await apiFetch(ENDPOINTS.start(currentBookingId, otp.trim()), {
                 method: "PUT",
-                credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-});
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
 
             const data = await readJSON(response);
 
@@ -646,10 +645,9 @@ if (workflowUploadInput) {
         showConferenceError("");
 
         try {
-            const response = await fetch(ENDPOINTS.uploadReport(), {
+            const response = await apiFetch(ENDPOINTS.uploadReport(), {
                 method: "PUT",
-                credentials: "include",
-body: formData
+                body: formData
             });
 
             const data = await readJSON(response);
@@ -673,20 +671,19 @@ body: formData
 }
 
 if (workflowEndBtn) {
-    workflowEndBtn.addEventListener("click", async () => {
+    workflowEndBtn.addEventListener("click", async (event) => {
         if (!currentBookingId) return;
 
         setButtonLoading(workflowEndBtn, "Ending...", true);
         showConferenceError("");
 
         try {
-            const response = await fetch(ENDPOINTS.end(currentBookingId), {
+            const response = await apiFetch(ENDPOINTS.end(currentBookingId), {
                 method: "PUT",
-                credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-});
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
 
             const data = await readJSON(response);
 

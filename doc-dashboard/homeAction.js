@@ -1,40 +1,40 @@
-import { domain } from "../config.js";
+import { apiFetch } from "../apiFetch.js";
 
 /*
  * Change these paths if your backend uses different routes.
  */
 const ENDPOINTS = {
     search:
-        `${domain}/api/booking/doctor-bookings`,
+        `/api/booking/doctor-bookings`,
 
     today:
-        `${domain}/api/booking/doctor-bookings`,
+        `/api/booking/doctor-bookings`,
 
     emergencyCancel:
-        `${domain}/api/booking/emergency-cancel`,
+        `/api/booking/emergency-cancel`,
 
     profile: (doctorId) =>
-        `${domain}/api/doctor/profile/${
+        `/api/doctor/profile/${
             encodeURIComponent(doctorId)
         }`,
 
     start: (bookingId, otp) =>
-        `${domain}/api/booking/start-consultation?id=${
+        `/api/booking/start-consultation?id=${
             encodeURIComponent(bookingId)
         }&otp=${encodeURIComponent(otp)}`,
 
     end: (bookingId) =>
-        `${domain}/api/booking/end-consultation?id=${
+        `/api/booking/end-consultation?id=${
             encodeURIComponent(bookingId)
         }`,
 
     conference: (bookingId) =>
-        `${domain}/api/booking/agora-token?bookingId=${
+        `/api/booking/agora-token?bookingId=${
             encodeURIComponent(bookingId)
         }`,
 
     uploadReport: (patientId) =>
-        `${domain}/api/report/upload-report?id=${
+        `/api/report/upload-report?id=${
             encodeURIComponent(patientId)
         }`
 };
@@ -694,17 +694,16 @@ const loadTodayConsultations = async () => {
     );
 
     try {
-        const response = await fetch(
+        const response = await apiFetch(
             `${ENDPOINTS.today}?date=${
                 encodeURIComponent(today)
             }`,
             {
                 method: "GET",
-                credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-}
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
         );
 
         const data =
@@ -811,16 +810,14 @@ $("#emergencyCancelForm").addEventListener(
         );
 
         try {
-            const response = await fetch(
+            const response = await apiFetch(
                 ENDPOINTS.emergencyCancel,
                 {
                     method: "PUT",
-
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
                     },
-body:
+                    body:
                         JSON.stringify({
                             reason,
                             date: today
@@ -897,7 +894,7 @@ $("#searchForm").addEventListener(
         );
 
         try {
-            const response = await fetch(
+            const response = await apiFetch(
                 `${ENDPOINTS.search}?date=${
                     encodeURIComponent(
                         selectedDate
@@ -905,11 +902,10 @@ $("#searchForm").addEventListener(
                 }`,
                 {
                     method: "GET",
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
-                    },
-}
+                    }
+                }
             );
 
             const data =
@@ -1053,16 +1049,14 @@ todayResults.addEventListener(
                 endpoint = ENDPOINTS.end(bookingId);
             }
 
-            const response = await fetch(
+            const response = await apiFetch(
                 endpoint,
                 {
                     method: "PUT",
-
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
-                    },
-}
+                    }
+                }
             );
 
             const data =
@@ -1124,12 +1118,11 @@ todayResults.addEventListener(
         );
 
         try {
-            const response = await fetch(
+            const response = await apiFetch(
                 ENDPOINTS.uploadReport(patientId),
                 {
                     method: "PUT",
-                    credentials: "include",
-body: formData
+                    body: formData
                 }
             );
 
@@ -1176,17 +1169,16 @@ const joinConference = async (
         "Joining...";
 
     try {
-        const response = await fetch(
+        const response = await apiFetch(
             ENDPOINTS.conference(
                 bookingId
             ),
             {
                 method: "GET",
-                credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-}
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
         );
 
         await console.log(response);
@@ -1902,15 +1894,14 @@ const loadDoctorProfile = async () => {
     isFeedbackExpanded = false;
 
     try {
-        const response = await fetch(
+        const response = await apiFetch(
             ENDPOINTS.profile(doctorId),
             {
                 method: "GET",
-                credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-}
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
         );
 
         const data =

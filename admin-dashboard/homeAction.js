@@ -1,4 +1,4 @@
-import { domain } from "../config.js";
+import { apiFetch } from "../apiFetch.js";
 
 /*
  * Change these paths if your Express router uses
@@ -6,26 +6,26 @@ import { domain } from "../config.js";
  */
 const ENDPOINTS = {
     doctorDocuments: (doctorId) =>
-        `${domain}/api/admin/doctors/${
+        `/api/admin/doctors/${
             encodeURIComponent(doctorId)
         }/documents`,
 
     statistics:
-        `${domain}/api/admin/dashboard`,
+        `/api/admin/dashboard`,
 
     findDoctors:
-        `${domain}/api/admin/doctors`,
+        `/api/admin/doctors`,
 
     removeDoctor: (doctorId) =>
-        `${domain}/api/admin/doctors/${
+        `/api/admin/doctors/${
             encodeURIComponent(doctorId)
         }`,
 
     pendingDoctors:
-        `${domain}/api/admin/doctors/pending`,
+        `/api/admin/doctors/pending`,
 
     verifyDoctor: (doctorId) =>
-        `${domain}/api/admin/doctors/${
+        `/api/admin/doctors/${
             encodeURIComponent(doctorId)
         }/verify`
 };
@@ -312,15 +312,14 @@ const loadStatistics = async () => {
         "Loading platform statistics...";
 
     try {
-        const response = await fetch(
+        const response = await apiFetch(
             ENDPOINTS.statistics,
             {
                 method: "GET",
-                credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-}
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
         );
 
         const data =
@@ -587,15 +586,14 @@ const findDoctors = async () => {
     );
 
     try {
-        const response = await fetch(
+        const response = await apiFetch(
             `${ENDPOINTS.findDoctors}?${parameters}`,
             {
                 method: "GET",
-                credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-}
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
         );
 
         const data =
@@ -703,17 +701,16 @@ $("#doctorResults").addEventListener(
             "Deleting...";
 
         try {
-            const response = await fetch(
+            const response = await apiFetch(
                 ENDPOINTS.removeDoctor(
                     doctorId
                 ),
                 {
                     method: "DELETE",
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
-                    },
-}
+                    }
+                }
             );
 
             const data =
@@ -792,17 +789,16 @@ $("#pendingDoctorResults").addEventListener(
         button.textContent = "Loading...";
 
         try {
-            const response = await fetch(
+            const response = await apiFetch(
                 ENDPOINTS.doctorDocuments(
                     doctorId
                 ),
                 {
                     method: "GET",
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
-                    },
-}
+                    }
+                }
             );
 
             const data =
@@ -1081,15 +1077,14 @@ const loadPendingDoctors = async () => {
     );
 
     try {
-        const response = await fetch(
+        const response = await apiFetch(
             ENDPOINTS.pendingDoctors,
             {
                 method: "GET",
-                credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-}
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
         );
 
         const data =
@@ -1180,18 +1175,16 @@ $("#pendingDoctorResults").addEventListener(
             "Submitting...";
 
         try {
-            const response = await fetch(
+            const response = await apiFetch(
                 ENDPOINTS.verifyDoctor(
                     doctorId
                 ),
                 {
                     method: "PATCH",
-
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
                     },
-body:
+                    body:
                         JSON.stringify({
                             verified,
                             verificationNote

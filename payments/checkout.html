@@ -16,7 +16,7 @@
     </div>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script type="module">
-import { domain } from "../config.js";
+import { apiFetch } from "../apiFetch.js";
 var options = {
     "key": localStorage.getItem("keyID") || "rzp_test_TRYzORwbdoZYPQ", // Enter the Key ID generated from the Dashboard
     "amount": localStorage.getItem("amount") || 500, // Amount is in currency subunits.
@@ -32,9 +32,8 @@ var options = {
             // Your logic here
             alert("Payment cancelled by user");
             try{
-                const book = await fetch(`${domain}/api/payment/cancel`,{
+                const book = await apiFetch("/api/payment/cancel",{
                     method : "POST",
-                    credentials: "include",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ bookingId: localStorage.getItem("bookingID") })
                 })
@@ -61,9 +60,8 @@ var options = {
     "handler":async function (response){
 
         try{
-            const book = await fetch(`${domain}/api/payment/verify`,{
+            const book = await apiFetch("/api/payment/verify",{
                 method : "POST",
-                credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 },

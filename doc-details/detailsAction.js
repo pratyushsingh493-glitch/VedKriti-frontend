@@ -1,4 +1,4 @@
-import { domain } from "../config.js";
+import { apiFetch } from "../apiFetch.js";
 
 /* =========================
    COMMON ELEMENTS
@@ -278,15 +278,14 @@ document
     .getElementById("location")
     .addEventListener("panelactive", async () => {
         try {
-            const response = await fetch(
-                `${domain}/api/doctor/get-practiceLocation`,
+            const response = await apiFetch(
+                "/api/doctor/get-practiceLocation",
                 {
                     method: "GET",
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
-                    },
-}
+                    }
+                }
             );
 
             const data =
@@ -313,7 +312,7 @@ document
             document.getElementById("address").value =
                 data.address || "";
 
-            document.getElementById("PIN").value =
+            document.getElementById("pin").value =
                 data.pin || "";
 
             document.getElementById("facility").value =
@@ -327,7 +326,7 @@ document
     });
 
 document
-    .getElementById("btnLoc")
+    .getElementById("btnLocation")
     .addEventListener("click", async (event) => {
         event.preventDefault();
 
@@ -362,7 +361,7 @@ document
 
         const pin =
             document
-                .getElementById("PIN")
+                .getElementById("pin")
                 .value.trim();
 
         const facilityName =
@@ -382,16 +381,14 @@ document
         await waitForNextPaint();
 
         try {
-            const response = await fetch(
-                `${domain}/api/doctor/set-practiceLocation`,
+            const response = await apiFetch(
+                "/api/doctor/set-practiceLocation",
                 {
                     method: "PUT",
-
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
                     },
-body: JSON.stringify({
+                    body: JSON.stringify({
                         city,
                         state,
                         country,
@@ -436,16 +433,14 @@ document
     .getElementById("education")
     .addEventListener("panelactive", async () => {
         try {
-            const response = await fetch(
-                `${domain}/api/doctor/get-education`,
+            const response = await apiFetch(
+                "/api/doctor/get-education",
                 {
                     method: "GET",
-
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
-                    },
-}
+                    }
+                }
             );
 
             const data =
@@ -547,16 +542,14 @@ document
         await waitForNextPaint();
 
         try {
-            const response = await fetch(
-                `${domain}/api/doctor/set-education`,
+            const response = await apiFetch(
+                "/api/doctor/set-education",
                 {
                     method: "PUT",
-
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
                     },
-body: JSON.stringify({
+                    body: JSON.stringify({
                         institute,
                         degreeType,
                         degreeName,
@@ -731,16 +724,14 @@ document
         }
 
         try {
-            const response = await fetch(
-                `${domain}/api/doctor/getexperience`,
+            const response = await apiFetch(
+                "/api/doctor/getexperience",
                 {
                     method: "GET",
-
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
-                    },
-}
+                    }
+                }
             );
 
             /*
@@ -904,16 +895,14 @@ experienceForm.addEventListener(
         await waitForNextPaint();
 
         try {
-            const response = await fetch(
-                `${domain}/api/doctor/addexperience`,
+            const response = await apiFetch(
+                "/api/doctor/addexperience",
                 {
                     method: "POST",
-
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
                     },
-body: JSON.stringify({
+                    body: JSON.stringify({
                         experiences
                     })
                 }
@@ -958,16 +947,14 @@ document
     .getElementById("operational")
     .addEventListener("panelactive", async () => {
         try {
-            const response = await fetch(
-                `${domain}/api/doctor/get-operationalDetails`,
+            const response = await apiFetch(
+                "/api/doctor/get-operationalDetails",
                 {
                     method: "GET",
-
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
-                    },
-}
+                    }
+                }
             );
 
             const data =
@@ -1073,16 +1060,14 @@ document
         await waitForNextPaint();
 
         try {
-            const response = await fetch(
-                `${domain}/api/doctor/set-operationalDetails`,
+            const response = await apiFetch(
+                "/api/doctor/set-operationalDetails",
                 {
                     method: "PUT",
-
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
                     },
-body: JSON.stringify({
+                    body: JSON.stringify({
                         morningCapacity,
                         afternoonCapacity,
                         eveningCapacity,
@@ -1124,16 +1109,14 @@ document
     .getElementById("about")
     .addEventListener("panelactive", async () => {
         try {
-            const response = await fetch(
-                `${domain}/api/doctor/get-about`,
+            const response = await apiFetch(
+                "/api/doctor/get-about",
                 {
                     method: "GET",
-
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
-                    },
-}
+                    }
+                }
             );
 
             const data =
@@ -1228,13 +1211,11 @@ document
         await waitForNextPaint();
 
         try {
-            const response = await fetch(
-                `${domain}/api/doctor/set-about`,
+            const response = await apiFetch(
+                "/api/doctor/set-about",
                 {
                     method: "PUT",
-
-                    credentials: "include",
-body: formData
+                    body: formData
                 }
             );
 
@@ -1272,21 +1253,16 @@ document
     .addEventListener("click", async (event) => {
         event.preventDefault();
 
-        try{
-            const response = await fetch(`${domain}/api/doctor/profile-status`,{
-                method : "GET",
-                headers : {
-                    "Authorization" : `Bearer ${localStorage.getItem("token")}`
-                }
-            })
+        try {
+            const response = await apiFetch("/api/doctor/profile-status");
 
-            const data =await response.json();
-            if(data.data === true){
+            const data = await response.json();
+            if (data.data === true) {
                 window.location.href = "../doc-dashboard/home.html";
-            }else{
+            } else {
                 alert("You Are Not Yet Verified");
             }
-        }catch(error){
+        } catch (error) {
             showError(error);
         }
 
@@ -1370,16 +1346,11 @@ document
             /*
              * Upload the medical certificate.
              */
-            const medicalResponse = await fetch(
-                `${domain}/api/doctor/upload-document`,
+            const medicalResponse = await apiFetch(
+                "/api/doctor/upload-document",
                 {
                     method: "POST",
-
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-body: medicalCertForm
+                    body: medicalCertForm
                 }
             );
 
@@ -1401,16 +1372,11 @@ body: medicalCertForm
              * Upload the government ID.
              */
             const governmentResponse =
-                await fetch(
-                    `${domain}/api/doctor/upload-document`,
+                await apiFetch(
+                    "/api/doctor/upload-document",
                     {
                         method: "POST",
-
-                        credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-body: governmentIdForm
+                        body: governmentIdForm
                     }
                 );
 

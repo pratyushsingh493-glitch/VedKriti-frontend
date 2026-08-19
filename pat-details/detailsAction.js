@@ -1,4 +1,4 @@
-import { domain } from "../config.js";
+import { apiFetch } from "../apiFetch.js";
 
 const profilePic = document.querySelector("#about img");
 const inputFile = document.querySelector("#pfp");
@@ -85,12 +85,11 @@ document.getElementById("btnAbout").addEventListener("click", async (e) => {
     }
 
     try {
-        const response = await fetch(
-            `${domain}/api/patient/update-profile`,
+        const response = await apiFetch(
+            "/api/patient/update-profile",
             {
                 method: "PUT",
-                credentials: "include",
-body: formData
+                body: formData
             }
         );
 

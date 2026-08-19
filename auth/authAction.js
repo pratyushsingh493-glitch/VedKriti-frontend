@@ -1,4 +1,5 @@
 import { domain } from "../config.js";
+import { apiFetch } from "../apiFetch.js";
 
 /* =========================================================
    DOM ELEMENTS
@@ -254,16 +255,15 @@ const getProfileStatus = async (
     }
 
     try {
-     const response = await fetch(
-    `${domain}${endpoint}`,
-    {
-        method: "GET",
-        credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-}
-);
+        const response = await apiFetch(
+            endpoint,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        );
 
         const result =
             await getResponseData(response);
