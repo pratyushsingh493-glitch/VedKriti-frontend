@@ -1093,8 +1093,6 @@ const handleRecordsSubmit = async (event) => {
         alert(
             "Documents uploaded successfully! Your details have been submitted for verification."
         );
-
-        window.location.href = "../doc-dashboard/home.html";
     } catch (error) {
         showError(error.message);
     } finally {
@@ -1109,6 +1107,58 @@ if (recordsForm) {
 const recordsBtn = document.getElementById("btnRecords");
 if (recordsBtn && recordsBtn.form !== recordsForm) {
     recordsBtn.addEventListener("click", handleRecordsSubmit);
+}
+
+const getProfileStatus = async (role, token) => {
+    let endpoint;
+
+    if (role === "PATIENT") {
+        endpoint = "/api/patient/profile-status";
+    } else if (role === "DOCTOR") {
+        endpoint = "/api/doctor/profile-status";
+    } else {
+        return false;
+    }
+
+    try {
+        const response = await apiFetch(endpoint, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        const result = await getResponseData(response);
+
+        if (!response.ok) {
+            throw new Error(result.message || "Unable to check profile status.");
+        }
+
+        if (typeof result.data !== "boolean") {
+            throw new Error("Invalid profile-status response received from the server.");
+        }
+
+        return result.data;
+    } catch (error) {
+        console.error("Profile-status request failed:", error);
+        showError(error.message || "Unable to check your profile status. Please try again.");
+        return null;
+    }
+};
+
+const dashboardBtn = document.getElementById("btnDashboard");
+if (dashboardBtn) {
+    dashboardBtn.addEventListener("click", async () => {
+        const role = localStorage.getItem("role") || "DOCTOR";
+        const token = localStorage.getItem("token") || "";
+        
+        const isVerified = await getProfileStatus(role, token);
+        if (isVerified === true) {
+            window.location.href = "../doc-dashboard/home.html";
+        } else {
+            showError("Your profile is unverified. Please wait for verification.");
+        }
+    });
 }
 
 /* =========================
