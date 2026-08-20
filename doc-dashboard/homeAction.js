@@ -2038,11 +2038,15 @@ const operationalForm = document.getElementById("operationalForm");
 const morningCapacityInput = document.getElementById("morningCapacityInput");
 const afternoonCapacityInput = document.getElementById("afternoonCapacityInput");
 const eveningCapacityInput = document.getElementById("eveningCapacityInput");
-const holidaysInput = document.getElementById("holidaysInput");
+const operationalDateInput = document.getElementById("operationalDateInput");
 
 if (btnUpdateOperational) {
     btnUpdateOperational.addEventListener("click", async () => {
         try {
+            const originalText = btnUpdateOperational.textContent;
+            btnUpdateOperational.textContent = "Loading...";
+            btnUpdateOperational.disabled = true;
+
             const response = await apiFetch("/api/doctor/get-operationalDetails", {
                 method: "GET",
                 headers: {
@@ -2055,14 +2059,19 @@ if (btnUpdateOperational) {
                 morningCapacityInput.value = result.data.morningCapacity || 0;
                 afternoonCapacityInput.value = result.data.afternoonCapacity || 0;
                 eveningCapacityInput.value = result.data.eveningCapacity || 0;
-                holidaysInput.value = (result.data.holidays || []).join(", ");
+                if (operationalDateInput) operationalDateInput.value = "";
                 operationalModal.style.display = "flex";
             } else {
                 alert(result.message || "Unable to fetch operational details");
             }
+
+            btnUpdateOperational.textContent = originalText;
+            btnUpdateOperational.disabled = false;
         } catch (error) {
             console.error(error);
             alert("Error fetching operational details.");
+            btnUpdateOperational.textContent = "Update Operational Details";
+            btnUpdateOperational.disabled = false;
         }
     });
 }
@@ -2080,29 +2089,37 @@ if (operationalForm) {
         const morningCapacity = parseInt(morningCapacityInput.value) || 0;
         const afternoonCapacity = parseInt(afternoonCapacityInput.value) || 0;
         const eveningCapacity = parseInt(eveningCapacityInput.value) || 0;
-        
-        let holidays = [];
-        if (holidaysInput.value.trim()) {
-            holidays = holidaysInput.value.split(",").map(h => h.trim());
+        const date = operationalDateInput.value;
+
+        if (!date) {
+            alert("Date is required.");
+            return;
+        }
+
+        const submitBtn = document.getElementById("saveOperationalBtn");
+        const originalText = submitBtn ? submitBtn.textContent : "Save";
+        if (submitBtn) {
+            submitBtn.textContent = "Saving...";
+            submitBtn.disabled = true;
         }
 
         try {
-            const response = await apiFetch("/api/doctor/set-operationalDetails", {
+            const response = await apiFetch("/api/doctor/update-capacity", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
+                    date,
                     morningCapacity,
                     afternoonCapacity,
-                    eveningCapacity,
-                    holidays
+                    eveningCapacity
                 })
             });
             
             const result = await readJSON(response);
             if (response.ok) {
-                alert("Operational details updated successfully.");
+                alert("Capacity updated. Overflows waitlisted, free space assigned.");
                 operationalModal.style.display = "none";
                 if (typeof loadDoctorProfile === "function") {
                     loadDoctorProfile();
@@ -2113,6 +2130,11 @@ if (operationalForm) {
         } catch (error) {
             console.error(error);
             alert("Error updating operational details.");
+        } finally {
+            if (submitBtn) {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
         }
     });
 }

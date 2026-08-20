@@ -85,6 +85,11 @@ document.getElementById("btnAbout").addEventListener("click", async (e) => {
         formData.append("photo", profileFile);
     }
 
+    const btnAbout = document.getElementById("btnAbout");
+    const originalText = btnAbout.value || "Submit";
+    btnAbout.value = "Saving...";
+    btnAbout.disabled = true;
+
     try {
         const response = await apiFetch(
             "/api/patient/update-profile",
@@ -103,6 +108,9 @@ document.getElementById("btnAbout").addEventListener("click", async (e) => {
         }
     } catch (error) {
         showError(error.message);
+    } finally {
+        btnAbout.value = originalText;
+        btnAbout.disabled = false;
     }
 });
 
