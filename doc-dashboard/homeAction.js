@@ -2104,7 +2104,7 @@ if (operationalForm) {
         }
 
         try {
-            const response = await apiFetch("/api/doctor/update-capacity", {
+            const response = await apiFetch("/api/booking/update-capacity", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
