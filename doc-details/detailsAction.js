@@ -1123,4 +1123,4 @@ if (tabPanels.length > 0) {
     const hash = window.location.hash;
     const initialPanel = (hash && document.querySelector(hash)) || tabPanels[0];
     showPanel(initialPanel);
-}
+}
