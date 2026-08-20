@@ -14,7 +14,7 @@ const ENDPOINTS = {
         `/api/admin/dashboard`,
 
     findDoctors:
-        `/api/admin/doctors`,
+        `/api/doctor/find-doctor`,
 
     removeDoctor: (doctorId) =>
         `/api/admin/doctors/${
