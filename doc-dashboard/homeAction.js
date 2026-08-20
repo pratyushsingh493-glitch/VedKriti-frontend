@@ -2026,3 +2026,93 @@ profileFeedback.addEventListener(
 $("#date").min = getTodayDate(); 
 
 openTab("profile");
+
+/* =========================================================
+   OPERATIONAL DETAILS MODAL
+========================================================= */
+
+const btnUpdateOperational = document.getElementById("btnUpdateOperational");
+const operationalModal = document.getElementById("operationalModal");
+const closeOperationalModal = document.getElementById("closeOperationalModal");
+const operationalForm = document.getElementById("operationalForm");
+const morningCapacityInput = document.getElementById("morningCapacityInput");
+const afternoonCapacityInput = document.getElementById("afternoonCapacityInput");
+const eveningCapacityInput = document.getElementById("eveningCapacityInput");
+const holidaysInput = document.getElementById("holidaysInput");
+
+if (btnUpdateOperational) {
+    btnUpdateOperational.addEventListener("click", async () => {
+        try {
+            const response = await apiFetch("/api/doctor/get-operationalDetails", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            
+            const result = await readJSON(response);
+            if (response.ok && result.data) {
+                morningCapacityInput.value = result.data.morningCapacity || 0;
+                afternoonCapacityInput.value = result.data.afternoonCapacity || 0;
+                eveningCapacityInput.value = result.data.eveningCapacity || 0;
+                holidaysInput.value = (result.data.holidays || []).join(", ");
+                operationalModal.style.display = "flex";
+            } else {
+                alert(result.message || "Unable to fetch operational details");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error fetching operational details.");
+        }
+    });
+}
+
+if (closeOperationalModal) {
+    closeOperationalModal.addEventListener("click", () => {
+        operationalModal.style.display = "none";
+    });
+}
+
+if (operationalForm) {
+    operationalForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const morningCapacity = parseInt(morningCapacityInput.value) || 0;
+        const afternoonCapacity = parseInt(afternoonCapacityInput.value) || 0;
+        const eveningCapacity = parseInt(eveningCapacityInput.value) || 0;
+        
+        let holidays = [];
+        if (holidaysInput.value.trim()) {
+            holidays = holidaysInput.value.split(",").map(h => h.trim());
+        }
+
+        try {
+            const response = await apiFetch("/api/doctor/set-operationalDetails", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    morningCapacity,
+                    afternoonCapacity,
+                    eveningCapacity,
+                    holidays
+                })
+            });
+            
+            const result = await readJSON(response);
+            if (response.ok) {
+                alert("Operational details updated successfully.");
+                operationalModal.style.display = "none";
+                if (typeof loadDoctorProfile === "function") {
+                    loadDoctorProfile();
+                }
+            } else {
+                alert(result.message || "Failed to update details.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error updating operational details.");
+        }
+    });
+}
