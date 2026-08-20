@@ -733,7 +733,7 @@ const renderUpcomingCard = (booking) => {
     const bookingId = booking._id || booking.id;
     const consultationType = String(booking.consultationType || "OFFLINE").toUpperCase();
     const status = String(booking.status || "PENDING").toUpperCase();
-    const tokenNum = booking.token ?? booking.tokenNumber ?? 0;
+    const tokenNum = booking.tokenNo ?? booking.tokenNumber ?? 0;
 
     const docName = booking.docID?.name || booking.doctorName || booking.docName || "Doctor";
     const facility = booking.docID?.facilityName || booking.facilityName || "";
