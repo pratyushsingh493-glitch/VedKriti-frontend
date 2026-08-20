@@ -27,35 +27,35 @@ const showError = (message) => {
     alert(message);
 };
 
-// try{
-//     const response = await fetch(
-//         `${domain}/api/patient/update-profile`,
-//         {
-//             method: "PUT",
-//             credentials: "include",
+try{
+    const response = await fetch(
+        `${domain}/api/patient/update-profile`,
+        {
+            method: "PUT",
+            credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
                     },
-//         }
-//     );
+        }
+    );
 
-//     const data = await response.json();
+    const data = await response.json();
 
-//     if (response.ok) {
-//         const gender = document.getElementById("gender").value = data.gender;
-//         const dob = document.getElementById("dob").value = data.dob;
-//         const phone = document.getElementById("phone").value = data.phone;
-//         const address = document.getElementById("address").value = data.address;
-//         const profileImage = document.querySelector("#about img");
-//         if (data.photo) {
-//             profileImage.src = data.photo;
-//         }
-//     } else {
-//         showError(data.message || "Unable to get profile details");
-//     }
-// }catch(error){
-//     showError(error.message);
-// }
+    if (response.ok) {
+        const gender = document.getElementById("gender").value = data.gender;
+        const dob = document.getElementById("dob").value = data.dob;
+        const phone = document.getElementById("phone").value = data.phone;
+        const address = document.getElementById("address").value = data.address;
+        const profileImage = document.querySelector("#about img");
+        if (data.photo) {
+            profileImage.src = data.photo;
+        }
+    } else {
+        showError(data.message || "Unable to get profile details");
+    }
+}catch(error){
+    showError(error.message);
+}
 
 document.getElementById("btnAbout").addEventListener("click", async (e) => {
     e.preventDefault();
