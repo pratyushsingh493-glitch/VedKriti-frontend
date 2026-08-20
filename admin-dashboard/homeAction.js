@@ -1,3 +1,4 @@
+import { domain } from "../config.js";
 import { apiFetch } from "../apiFetch.js";
 
 /*
