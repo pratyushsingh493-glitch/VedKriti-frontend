@@ -5,7 +5,7 @@ import { apiFetch } from "../apiFetch.js";
 ========================= */
 
 const tabContainer = document.querySelector(".tabs-container");
-const tabButtons = tabContainer.querySelectorAll("a");
+const tabButtons = tabContainer ? tabContainer.querySelectorAll("a") : [];
 const tabPanels = document.querySelectorAll(".tabs__panel > div");
 
 const profilePic = document.querySelector("#about img");
@@ -32,7 +32,6 @@ const showError = (message) => {
  * Reads the complete JSON response.
  *
  * For an object response:
- *
  * {
  *     status: "SUCCESS",
  *     data: {
@@ -41,15 +40,11 @@ const showError = (message) => {
  * }
  *
  * It returns:
- *
  * {
  *     status: "SUCCESS",
  *     data: {...},
  *     city: "Gwalior"
  * }
- *
- * Arrays are not merged because array-based responses,
- * such as experiences, are handled separately.
  */
 const getResponseData = async (response) => {
     try {
@@ -75,14 +70,6 @@ const getResponseData = async (response) => {
 
 /*
  * Starts or stops the loader on a button.
- *
- * It supports both:
- *
- * <button type="submit">Save</button>
- *
- * and:
- *
- * <input type="submit" value="Save">
  */
 const setButtonLoading = (
     button,
@@ -131,11 +118,9 @@ const setButtonLoading = (
 
     if (button.dataset.originalContent !== undefined) {
         if (button.dataset.controlType === "input") {
-            button.value =
-                button.dataset.originalContent;
+            button.value = button.dataset.originalContent;
         } else {
-            button.innerHTML =
-                button.dataset.originalContent;
+            button.innerHTML = button.dataset.originalContent;
         }
 
         delete button.dataset.originalContent;
@@ -159,9 +144,7 @@ const waitForNextPaint = () =>
  */
 if (!document.getElementById("submit-button-loader-style")) {
     const loaderStyle = document.createElement("style");
-
     loaderStyle.id = "submit-button-loader-style";
-
     loaderStyle.textContent = `
         .submit-button-loading {
             cursor: wait;
@@ -186,7 +169,6 @@ if (!document.getElementById("submit-button-loader-style")) {
             }
         }
     `;
-
     document.head.appendChild(loaderStyle);
 }
 
@@ -194,7 +176,6 @@ const formatDateForInput = (date) => {
     if (!date) {
         return "";
     }
-
     return String(date).split("T")[0];
 };
 
@@ -203,21 +184,20 @@ const formatDateForInput = (date) => {
 ========================= */
 
 const showPanel = (activePanel) => {
+    if (!activePanel) {
+        return;
+    }
+
     tabPanels.forEach((panel) => {
         panel.hidden = panel !== activePanel;
     });
 
     tabButtons.forEach((tab) => {
         const isActive =
-            tab.getAttribute("href") ===
-            `#${activePanel.id}`;
+            tab.getAttribute("href") === `#${activePanel.id}`;
 
         tab.classList.toggle("active", isActive);
-
-        tab.setAttribute(
-            "aria-selected",
-            String(isActive)
-        );
+        tab.setAttribute("aria-selected", String(isActive));
 
         if (isActive) {
             tab.setAttribute("aria-current", "step");
@@ -233,50 +213,68 @@ const showPanel = (activePanel) => {
     );
 };
 
-tabContainer.addEventListener("click", (event) => {
-    const clickedTab = event.target.closest("a");
-
-    if (
-        !clickedTab ||
-        !tabContainer.contains(clickedTab)
-    ) {
-        return;
+const switchToTab = (tabIdOrHref) => {
+    let selector = tabIdOrHref;
+    if (!selector.startsWith("#")) {
+        const tabEl = document.getElementById(tabIdOrHref);
+        if (tabEl && tabEl.getAttribute("href")) {
+            selector = tabEl.getAttribute("href");
+        } else {
+            selector = `#${tabIdOrHref}`;
+        }
     }
 
-    event.preventDefault();
-
-    const panelSelector =
-        clickedTab.getAttribute("href");
-
-    const activePanel =
-        document.querySelector(panelSelector);
-
-    if (activePanel) {
-        showPanel(activePanel);
+    const targetPanel = document.querySelector(selector);
+    if (targetPanel) {
+        showPanel(targetPanel);
+        targetPanel.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-});
+};
+
+if (tabContainer) {
+    tabContainer.addEventListener("click", (event) => {
+        const clickedTab = event.target.closest("a");
+
+        if (!clickedTab || !tabContainer.contains(clickedTab)) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const panelSelector = clickedTab.getAttribute("href");
+        const activePanel = document.querySelector(panelSelector);
+
+        if (activePanel) {
+            showPanel(activePanel);
+        }
+    });
+}
 
 /* =========================
    PROFILE-PICTURE PREVIEW
 ========================= */
 
-inputFile.addEventListener("change", () => {
-    const file = inputFile.files[0];
+if (inputFile && profilePic) {
+    inputFile.addEventListener("change", () => {
+        const file = inputFile.files[0];
 
-    if (!file) {
-        return;
-    }
+        if (!file) {
+            return;
+        }
 
-    profilePic.src = URL.createObjectURL(file);
-});
+        profilePic.src = URL.createObjectURL(file);
+    });
+}
 
 /* =========================
    PRACTICE LOCATION
 ========================= */
 
-document
-    .getElementById("location")
-    .addEventListener("panelactive", async () => {
+const locationPanel = document.getElementById("location");
+const locationForm = locationPanel ? locationPanel.querySelector("form") : null;
+
+if (locationPanel) {
+    locationPanel.addEventListener("panelactive", async () => {
         try {
             const response = await apiFetch(
                 "/api/doctor/get-practiceLocation",
@@ -288,150 +286,114 @@ document
                 }
             );
 
-            const data =
-                await getResponseData(response);
+            const data = await getResponseData(response);
 
             if (!response.ok) {
-                showError(
-                    data.message ||
-                    "Unable to get practice-location details."
-                );
-
+                console.warn("No existing practice location:", data.message);
                 return;
             }
 
-            document.getElementById("city").value =
-                data.city || "";
+            const cityEl = document.getElementById("city");
+            const stateEl = document.getElementById("state");
+            const countryEl = document.getElementById("country");
+            const addressEl = document.getElementById("address");
+            const pinEl = document.getElementById("PIN");
+            const facilityEl = document.getElementById("facility");
+            const feeEl = document.getElementById("fee");
 
-            document.getElementById("state").value =
-                data.state || "";
-
-            document.getElementById("country").value =
-                data.country || "";
-
-            document.getElementById("address").value =
-                data.address || "";
-
-            document.getElementById("pin").value =
-                data.pin || "";
-
-            document.getElementById("facility").value =
-                data.facilityName || "";
-
-            document.getElementById("fee").value =
-                data.consultationFee ?? "";
+            if (cityEl) cityEl.value = data.city || "";
+            if (stateEl) stateEl.value = data.state || "";
+            if (countryEl) countryEl.value = data.country || "";
+            if (addressEl) addressEl.value = data.address || "";
+            if (pinEl) pinEl.value = data.pin || "";
+            if (facilityEl) facilityEl.value = data.facilityName || "";
+            if (feeEl) feeEl.value = data.consultationFee ?? "";
         } catch (error) {
-            showError(error.message);
+            console.warn("Failed to load practice-location:", error.message);
         }
     });
+}
 
-document
-    .getElementById("btnLocation")
-    .addEventListener("click", async (event) => {
-        event.preventDefault();
+const handleLocationSubmit = async (event) => {
+    event.preventDefault();
 
-        const submitButton = event.currentTarget;
-        const currentForm =
-            submitButton.closest("form");
+    const form = locationForm || (event.currentTarget.closest ? event.currentTarget.closest("form") : null);
+    if (!form) return;
 
-        if (!currentForm.checkValidity()) {
-            currentForm.reportValidity();
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const submitButton = form.querySelector('[type="submit"]') || document.getElementById("btnLoc") || document.getElementById("btnLocation");
+
+    const city = document.getElementById("city") ? document.getElementById("city").value.trim() : "";
+    const state = document.getElementById("state") ? document.getElementById("state").value.trim() : "";
+    const country = document.getElementById("country") ? document.getElementById("country").value.trim() : "";
+    const address = document.getElementById("address") ? document.getElementById("address").value.trim() : "";
+    const pin = document.getElementById("PIN") ? document.getElementById("PIN").value.trim() : "";
+    const facilityName = document.getElementById("facility") ? document.getElementById("facility").value.trim() : "";
+    const consultationFee = document.getElementById("fee") ? Number(document.getElementById("fee").value) : 0;
+
+    setButtonLoading(submitButton, true, "Saving...");
+    await waitForNextPaint();
+
+    try {
+        const response = await apiFetch(
+            "/api/doctor/set-practiceLocation",
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    city,
+                    state,
+                    country,
+                    address,
+                    pin,
+                    facilityName,
+                    consultationFee
+                })
+            }
+        );
+
+        const data = await getResponseData(response);
+
+        if (!response.ok) {
+            showError(
+                data.message ||
+                "Unable to save practice-location details."
+            );
             return;
         }
 
-        const city =
-            document
-                .getElementById("city")
-                .value.trim();
+        switchToTab("tab2");
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        setButtonLoading(submitButton, false);
+    }
+};
 
-        const state =
-            document
-                .getElementById("state")
-                .value.trim();
+if (locationForm) {
+    locationForm.addEventListener("submit", handleLocationSubmit);
+}
 
-        const country =
-            document
-                .getElementById("country")
-                .value.trim();
-
-        const address =
-            document
-                .getElementById("address")
-                .value.trim();
-
-        const pin =
-            document
-                .getElementById("pin")
-                .value.trim();
-
-        const facilityName =
-            document
-                .getElementById("facility")
-                .value.trim();
-
-        const consultationFee =
-            document.getElementById("fee").value;
-
-        setButtonLoading(
-            submitButton,
-            true,
-            "Saving..."
-        );
-
-        await waitForNextPaint();
-
-        try {
-            const response = await apiFetch(
-                "/api/doctor/set-practiceLocation",
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        city,
-                        state,
-                        country,
-                        address,
-                        pin,
-                        facilityName,
-                        consultationFee
-                    })
-                }
-            );
-
-            const data =
-                await getResponseData(response);
-
-            if (!response.ok) {
-                showError(
-                    data.message ||
-                    "Unable to save practice-location details."
-                );
-
-                return;
-            }
-
-            document
-                .getElementById("tab2")
-                .click();
-        } catch (error) {
-            showError(error.message);
-        } finally {
-            setButtonLoading(
-                submitButton,
-                false
-            );
-        }
-    });
+const locBtn = document.getElementById("btnLoc") || document.getElementById("btnLocation");
+if (locBtn && locBtn.form !== locationForm) {
+    locBtn.addEventListener("click", handleLocationSubmit);
+}
 
 /* =========================
    EDUCATION
 ========================= */
 
-document
-    .getElementById("education")
-    .addEventListener("panelactive", async () => {
+const educationPanel = document.getElementById("education");
+const educationForm = educationPanel ? educationPanel.querySelector("form") : null;
+
+if (educationPanel) {
+    educationPanel.addEventListener("panelactive", async () => {
         try {
             const response = await apiFetch(
                 "/api/doctor/get-education",
@@ -443,148 +405,104 @@ document
                 }
             );
 
-            const data =
-                await getResponseData(response);
+            const data = await getResponseData(response);
 
             if (!response.ok) {
-                showError(
-                    data.message ||
-                    "Unable to get education details."
-                );
-
+                console.warn("No existing education details:", data.message);
                 return;
             }
 
-            document.getElementById("institute").value =
-                data.institute || "";
+            const instituteEl = document.getElementById("institute");
+            const degTypeEl = document.getElementById("deg_type");
+            const degNameEl = document.getElementById("deg_name");
+            const fieldOfStudyEl = document.getElementById("feildOfStudy");
+            const s1El = document.getElementById("s1");
+            const s2El = document.getElementById("s2");
+            const s3El = document.getElementById("s3");
 
-            document.getElementById("deg_type").value =
-                data.degreeType || "";
-
-            document.getElementById("deg_name").value =
-                data.degreeName || "";
-
-            document.getElementById(
-                "feildOfStudy"
-            ).value =
-                data.fieldOfStudy ||
-                data.feildOfStudy ||
-                "";
-
-            document.getElementById("s1").value =
-                data.specialization1 || "";
-
-            document.getElementById("s2").value =
-                data.specialization2 || "";
-
-            document.getElementById("s3").value =
-                data.specialization3 || "";
+            if (instituteEl) instituteEl.value = data.institute || "";
+            if (degTypeEl) degTypeEl.value = data.degreeType || "";
+            if (degNameEl) degNameEl.value = data.degreeName || "";
+            if (fieldOfStudyEl) fieldOfStudyEl.value = data.fieldOfStudy || data.feildOfStudy || "";
+            if (s1El) s1El.value = data.specialization1 || "";
+            if (s2El) s2El.value = data.specialization2 || "";
+            if (s3El) s3El.value = data.specialization3 || "";
         } catch (error) {
-            showError(error.message);
+            console.warn("Failed to load education details:", error.message);
         }
     });
+}
 
-document
-    .getElementById("btnEdu")
-    .addEventListener("click", async (event) => {
-        event.preventDefault();
+const handleEducationSubmit = async (event) => {
+    event.preventDefault();
 
-        const submitButton = event.currentTarget;
-        const currentForm =
-            submitButton.closest("form");
+    const form = educationForm || (event.currentTarget.closest ? event.currentTarget.closest("form") : null);
+    if (!form) return;
 
-        if (!currentForm.checkValidity()) {
-            currentForm.reportValidity();
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const submitButton = form.querySelector('[type="submit"]') || document.getElementById("btnEdu");
+
+    const institute = document.getElementById("institute") ? document.getElementById("institute").value.trim() : "";
+    const degreeType = document.getElementById("deg_type") ? document.getElementById("deg_type").value.trim() : "";
+    const degreeName = document.getElementById("deg_name") ? document.getElementById("deg_name").value.trim() : "";
+    const fieldOfStudy = document.getElementById("feildOfStudy") ? document.getElementById("feildOfStudy").value.trim() : "";
+    const specialization1 = document.getElementById("s1") ? document.getElementById("s1").value.trim() : "";
+    const specialization2 = document.getElementById("s2") ? document.getElementById("s2").value.trim() : "";
+    const specialization3 = document.getElementById("s3") ? document.getElementById("s3").value.trim() : "";
+
+    setButtonLoading(submitButton, true, "Saving...");
+    await waitForNextPaint();
+
+    try {
+        const response = await apiFetch(
+            "/api/doctor/set-education",
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    institute,
+                    degreeType,
+                    degreeName,
+                    fieldOfStudy,
+                    specialization1,
+                    specialization2,
+                    specialization3
+                })
+            }
+        );
+
+        const data = await getResponseData(response);
+
+        if (!response.ok) {
+            showError(
+                data.message ||
+                "Unable to save education details."
+            );
             return;
         }
 
-        const institute =
-            document
-                .getElementById("institute")
-                .value.trim();
+        switchToTab("tab3");
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        setButtonLoading(submitButton, false);
+    }
+};
 
-        const degreeType =
-            document
-                .getElementById("deg_type")
-                .value.trim();
+if (educationForm) {
+    educationForm.addEventListener("submit", handleEducationSubmit);
+}
 
-        const degreeName =
-            document
-                .getElementById("deg_name")
-                .value.trim();
-
-        const fieldOfStudy =
-            document
-                .getElementById("feildOfStudy")
-                .value.trim();
-
-        const specialization1 =
-            document
-                .getElementById("s1")
-                .value.trim();
-
-        const specialization2 =
-            document
-                .getElementById("s2")
-                .value.trim();
-
-        const specialization3 =
-            document
-                .getElementById("s3")
-                .value.trim();
-
-        setButtonLoading(
-            submitButton,
-            true,
-            "Saving..."
-        );
-
-        await waitForNextPaint();
-
-        try {
-            const response = await apiFetch(
-                "/api/doctor/set-education",
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        institute,
-                        degreeType,
-                        degreeName,
-                        fieldOfStudy,
-                        specialization1,
-                        specialization2,
-                        specialization3
-                    })
-                }
-            );
-
-            const data =
-                await getResponseData(response);
-
-            if (!response.ok) {
-                showError(
-                    data.message ||
-                    "Unable to save education details."
-                );
-
-                return;
-            }
-
-            document
-                .getElementById("tab3")
-                .click();
-        } catch (error) {
-            showError(error.message);
-        } finally {
-            setButtonLoading(
-                submitButton,
-                false
-            );
-        }
-    });
+const eduBtn = document.getElementById("btnEdu");
+if (eduBtn && eduBtn.form !== educationForm) {
+    eduBtn.addEventListener("click", handleEducationSubmit);
+}
 
 /* =========================
    EXPERIENCE
@@ -593,20 +511,14 @@ document
 const createExperienceFields = (experience = {}) => {
     experienceCount++;
 
-    const experienceBlock =
-        document.createElement("span");
-
-    experienceBlock.id =
-        `exp_${experienceCount}`;
-
-    experienceBlock.className =
-        "experience-entry";
+    const experienceBlock = document.createElement("span");
+    experienceBlock.id = `exp_${experienceCount}`;
+    experienceBlock.className = "experience-entry";
 
     experienceBlock.innerHTML = `
         <div>
             <label for="exp_facility_${experienceCount}">
                 Facility Name:
-
                 <input
                     type="text"
                     id="exp_facility_${experienceCount}"
@@ -619,7 +531,6 @@ const createExperienceFields = (experience = {}) => {
 
             <label for="exp_designation_${experienceCount}">
                 Designation:
-
                 <input
                     type="text"
                     id="exp_designation_${experienceCount}"
@@ -636,28 +547,22 @@ const createExperienceFields = (experience = {}) => {
         <div>
             <label for="start_${experienceCount}">
                 Start Date:
-
                 <input
                     type="date"
                     id="start_${experienceCount}"
                     name="start_${experienceCount}"
-                    value="${formatDateForInput(
-                        experience.startDate
-                    )}"
+                    value="${formatDateForInput(experience.startDate)}"
                     required
                 >
             </label>
 
             <label for="end_${experienceCount}">
                 End Date:
-
                 <input
                     type="date"
                     id="end_${experienceCount}"
                     name="end_${experienceCount}"
-                    value="${formatDateForInput(
-                        experience.endDate
-                    )}"
+                    value="${formatDateForInput(experience.endDate)}"
                     required
                 >
             </label>
@@ -676,49 +581,39 @@ const createExperienceFields = (experience = {}) => {
         <br>
     `;
 
-    const buttonContainer =
-        addExperienceButton.parentElement;
-
-    experienceForm.insertBefore(
-        experienceBlock,
-        buttonContainer
-    );
+    if (addExperienceButton) {
+        const buttonContainer = addExperienceButton.parentElement;
+        if (experienceForm && buttonContainer) {
+            experienceForm.insertBefore(experienceBlock, buttonContainer);
+        }
+    }
 };
 
-addExperienceButton.addEventListener(
-    "click",
-    (event) => {
+if (addExperienceButton) {
+    addExperienceButton.addEventListener("click", (event) => {
         event.preventDefault();
         createExperienceFields();
-    }
-);
+    });
+}
 
-experienceForm.addEventListener(
-    "click",
-    (event) => {
-        const deleteButton =
-            event.target.closest(".delBtn");
-
+if (experienceForm) {
+    experienceForm.addEventListener("click", (event) => {
+        const deleteButton = event.target.closest(".delBtn");
         if (!deleteButton) {
             return;
         }
 
         event.preventDefault();
-
-        const experienceBlock =
-            deleteButton.closest(
-                ".experience-entry"
-            );
-
+        const experienceBlock = deleteButton.closest(".experience-entry");
         if (experienceBlock) {
             experienceBlock.remove();
         }
-    }
-);
+    });
+}
 
-document
-    .getElementById("experiance")
-    .addEventListener("panelactive", async () => {
+const experiencePanel = document.getElementById("experiance");
+if (experiencePanel) {
+    experiencePanel.addEventListener("panelactive", async () => {
         if (experiencesLoaded) {
             return;
         }
@@ -734,218 +629,140 @@ document
                 }
             );
 
-            /*
-             * Experience response:
-             *
-             * {
-             *     status: "SUCCESS",
-             *     data: [...]
-             * }
-             */
             const result = await response.json();
 
             if (!response.ok) {
-                showError(
-                    result.message ||
-                    "Unable to get experience details."
-                );
-
+                console.warn("No existing experience details:", result.message);
                 return;
             }
 
-            const experiences =
-                Array.isArray(result.data)
-                    ? result.data
-                    : [];
+            const experiences = Array.isArray(result.data) ? result.data : [];
 
             if (experiences.length === 0) {
                 experiencesLoaded = true;
                 return;
             }
 
-            const firstExperience =
-                experiences[0];
+            const firstExperience = experiences[0];
+            const firstFacility = document.getElementById("exp_facility_1");
+            const firstDesignation = document.getElementById("exp_designation_1");
+            const firstStart = document.getElementById("start_1");
+            const firstEnd = document.getElementById("end_1");
 
-            document.getElementById(
-                "exp_facility_1"
-            ).value =
-                firstExperience.facilityName || "";
+            if (firstFacility) firstFacility.value = firstExperience.facilityName || "";
+            if (firstDesignation) firstDesignation.value = firstExperience.designation || "";
+            if (firstStart) firstStart.value = formatDateForInput(firstExperience.startDate);
+            if (firstEnd) firstEnd.value = formatDateForInput(firstExperience.endDate);
 
-            document.getElementById(
-                "exp_designation_1"
-            ).value =
-                firstExperience.designation || "";
-
-            document.getElementById(
-                "start_1"
-            ).value =
-                formatDateForInput(
-                    firstExperience.startDate
-                );
-
-            document.getElementById(
-                "end_1"
-            ).value =
-                formatDateForInput(
-                    firstExperience.endDate
-                );
-
-            experiences
-                .slice(1)
-                .forEach((experience) => {
-                    createExperienceFields(
-                        experience
-                    );
-                });
+            experiences.slice(1).forEach((experience) => {
+                createExperienceFields(experience);
+            });
 
             experiencesLoaded = true;
         } catch (error) {
-            showError(error.message);
+            console.warn("Failed to load experience details:", error.message);
+        }
+    });
+}
+
+const handleExperienceSubmit = async (event) => {
+    event.preventDefault();
+
+    const form = experienceForm || (event.currentTarget.closest ? event.currentTarget.closest("form") : null);
+    if (!form) return;
+
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const submitButton = form.querySelector('[type="submit"]') || document.getElementById("btnExp");
+
+    const experiences = [];
+    const firstFacility = document.getElementById("exp_facility_1");
+    const firstDesignation = document.getElementById("exp_designation_1");
+    const firstStart = document.getElementById("start_1");
+    const firstEnd = document.getElementById("end_1");
+
+    if (firstFacility && firstDesignation && firstStart && firstEnd) {
+        experiences.push({
+            facilityName: firstFacility.value.trim(),
+            designation: firstDesignation.value.trim(),
+            startDate: firstStart.value,
+            endDate: firstEnd.value
+        });
+    }
+
+    form.querySelectorAll(".experience-entry").forEach((block) => {
+        const number = block.id.replace("exp_", "");
+        const fac = document.getElementById(`exp_facility_${number}`);
+        const des = document.getElementById(`exp_designation_${number}`);
+        const st = document.getElementById(`start_${number}`);
+        const en = document.getElementById(`end_${number}`);
+
+        if (fac && des && st && en) {
+            experiences.push({
+                facilityName: fac.value.trim(),
+                designation: des.value.trim(),
+                startDate: st.value,
+                endDate: en.value
+            });
         }
     });
 
-experienceForm.addEventListener(
-    "submit",
-    async (event) => {
-        event.preventDefault();
+    setButtonLoading(submitButton, true, "Saving...");
+    await waitForNextPaint();
 
-        if (!experienceForm.checkValidity()) {
-            experienceForm.reportValidity();
+    try {
+        const response = await apiFetch(
+            "/api/doctor/addexperience",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    experiences
+                })
+            }
+        );
+
+        const data = await getResponseData(response);
+
+        if (!response.ok) {
+            showError(
+                data.message ||
+                "Unable to save experience details."
+            );
             return;
         }
 
-        const submitButton =
-            event.submitter ||
-            experienceForm.querySelector(
-                '[type="submit"]'
-            );
-
-        const experiences = [];
-
-        experiences.push({
-            facilityName:
-                document
-                    .getElementById(
-                        "exp_facility_1"
-                    )
-                    .value.trim(),
-
-            designation:
-                document
-                    .getElementById(
-                        "exp_designation_1"
-                    )
-                    .value.trim(),
-
-            startDate:
-                document.getElementById(
-                    "start_1"
-                ).value,
-
-            endDate:
-                document.getElementById(
-                    "end_1"
-                ).value
-        });
-
-        experienceForm
-            .querySelectorAll(
-                ".experience-entry"
-            )
-            .forEach((block) => {
-                const number =
-                    block.id.replace(
-                        "exp_",
-                        ""
-                    );
-
-                experiences.push({
-                    facilityName:
-                        document
-                            .getElementById(
-                                `exp_facility_${number}`
-                            )
-                            .value.trim(),
-
-                    designation:
-                        document
-                            .getElementById(
-                                `exp_designation_${number}`
-                            )
-                            .value.trim(),
-
-                    startDate:
-                        document.getElementById(
-                            `start_${number}`
-                        ).value,
-
-                    endDate:
-                        document.getElementById(
-                            `end_${number}`
-                        ).value
-                });
-            });
-
-        setButtonLoading(
-            submitButton,
-            true,
-            "Saving..."
-        );
-
-        await waitForNextPaint();
-
-        try {
-            const response = await apiFetch(
-                "/api/doctor/addexperience",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        experiences
-                    })
-                }
-            );
-
-            const data =
-                await getResponseData(response);
-
-            if (!response.ok) {
-                showError(
-                    data.message ||
-                    "Unable to save experience details."
-                );
-
-                return;
-            }
-
-            alert(
-                data.message ||
-                "Experience details saved successfully."
-            );
-
-            document
-                .getElementById("tab4")
-                .click();
-        } catch (error) {
-            showError(error.message);
-        } finally {
-            setButtonLoading(
-                submitButton,
-                false
-            );
-        }
+        switchToTab("tab4");
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        setButtonLoading(submitButton, false);
     }
-);
+};
+
+if (experienceForm) {
+    experienceForm.addEventListener("submit", handleExperienceSubmit);
+}
+
+const expBtn = document.getElementById("btnExp");
+if (expBtn && expBtn.form !== experienceForm) {
+    expBtn.addEventListener("click", handleExperienceSubmit);
+}
 
 /* =========================
    OPERATIONAL DETAILS
 ========================= */
 
-document
-    .getElementById("operational")
-    .addEventListener("panelactive", async () => {
+const operationalPanel = document.getElementById("operational");
+const operationalForm = operationalPanel ? operationalPanel.querySelector("form") : null;
+
+if (operationalPanel) {
+    operationalPanel.addEventListener("panelactive", async () => {
         try {
             const response = await apiFetch(
                 "/api/doctor/get-operationalDetails",
@@ -957,157 +774,133 @@ document
                 }
             );
 
-            const data =
-                await getResponseData(response);
+            const data = await getResponseData(response);
 
             if (!response.ok) {
-                showError(
-                    data.message ||
-                    "Unable to get operational details."
-                );
-
+                console.warn("No existing operational details:", data.message);
                 return;
             }
 
-            document.getElementById("m_cap").value =
-                data.morningCapacity ?? "";
+            const mCap = document.getElementById("m_cap");
+            const aCap = document.getElementById("a_cap");
+            const eCap = document.getElementById("e_cap");
 
-            document.getElementById("a_cap").value =
-                data.afternoonCapacity ?? "";
+            if (mCap) mCap.value = data.morningCapacity ?? "";
+            if (aCap) aCap.value = data.afternoonCapacity ?? "";
+            if (eCap) eCap.value = data.eveningCapacity ?? "";
 
-            document.getElementById("e_cap").value =
-                data.eveningCapacity ?? "";
-
-            const holiday = String(
-                data.holidays || ""
-            );
+            const holiday = String(data.holidays || "");
 
             document
-                .querySelectorAll(
-                    'input[name="holiday"]'
-                )
-                .forEach(
-                    (checkbox, index) => {
-                        checkbox.checked =
-                            holiday.includes(
-                                String(index + 1)
-                            );
-                    }
-                );
+                .querySelectorAll('input[name="holiday"]')
+                .forEach((checkbox, index) => {
+                    checkbox.checked = holiday.includes(String(index + 1));
+                });
         } catch (error) {
-            showError(error.message);
+            console.warn("Failed to load operational details:", error.message);
         }
     });
+}
 
-document
-    .getElementById("btnOps")
-    .addEventListener("click", async (event) => {
-        event.preventDefault();
+const handleOperationalSubmit = async (event) => {
+    event.preventDefault();
 
-        const submitButton = event.currentTarget;
-        const currentForm =
-            submitButton.closest("form");
+    const form = operationalForm || (event.currentTarget.closest ? event.currentTarget.closest("form") : null);
+    if (!form) return;
 
-        if (!currentForm.checkValidity()) {
-            currentForm.reportValidity();
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const submitButton = form.querySelector('[type="submit"]') || document.getElementById("btnOps");
+
+    const mCapEl = document.getElementById("m_cap");
+    const aCapEl = document.getElementById("a_cap");
+    const eCapEl = document.getElementById("e_cap");
+
+    const morningCapacity = mCapEl ? Number(mCapEl.value) : 0;
+    const afternoonCapacity = aCapEl ? Number(aCapEl.value) : 0;
+    const eveningCapacity = eCapEl ? Number(eCapEl.value) : 0;
+
+    const dayMap = {
+        Monday: "1",
+        Tuesday: "2",
+        Wednesday: "3",
+        Thursday: "4",
+        Friday: "5",
+        Saturday: "6",
+        Sunday: "7"
+    };
+
+    let holidayValue = "";
+
+    document
+        .querySelectorAll('input[name="holiday"]:checked')
+        .forEach((checkbox) => {
+            if (dayMap[checkbox.value]) {
+                holidayValue += dayMap[checkbox.value];
+            }
+        });
+
+    const holidays = holidayValue === "" ? 0 : Number(holidayValue);
+
+    setButtonLoading(submitButton, true, "Saving...");
+    await waitForNextPaint();
+
+    try {
+        const response = await apiFetch(
+            "/api/doctor/set-operationalDetails",
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    morningCapacity,
+                    afternoonCapacity,
+                    eveningCapacity,
+                    holidays
+                })
+            }
+        );
+
+        const data = await getResponseData(response);
+
+        if (!response.ok) {
+            showError(
+                data.message ||
+                "Unable to save operational details."
+            );
             return;
         }
 
-        const morningCapacity = Number(
-            document.getElementById("m_cap").value
-        );
+        switchToTab("tab5");
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        setButtonLoading(submitButton, false);
+    }
+};
 
-        const afternoonCapacity = Number(
-            document.getElementById("a_cap").value
-        );
+if (operationalForm) {
+    operationalForm.addEventListener("submit", handleOperationalSubmit);
+}
 
-        const eveningCapacity = Number(
-            document.getElementById("e_cap").value
-        );
-
-        const dayMap = {
-            Monday: "1",
-            Tuesday: "2",
-            Wednesday: "3",
-            Thursday: "4",
-            Friday: "5",
-            Saturday: "6",
-            Sunday: "7"
-        };
-
-        let holidayValue = "";
-
-        document
-            .querySelectorAll(
-                'input[name="holiday"]:checked'
-            )
-            .forEach((checkbox) => {
-                holidayValue +=
-                    dayMap[checkbox.value];
-            });
-
-        const holidays =
-            holidayValue === ""
-                ? 0
-                : Number(holidayValue);
-
-        setButtonLoading(
-            submitButton,
-            true,
-            "Saving..."
-        );
-
-        await waitForNextPaint();
-
-        try {
-            const response = await apiFetch(
-                "/api/doctor/set-operationalDetails",
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        morningCapacity,
-                        afternoonCapacity,
-                        eveningCapacity,
-                        holidays
-                    })
-                }
-            );
-
-            const data =
-                await getResponseData(response);
-
-            if (!response.ok) {
-                showError(
-                    data.message ||
-                    "Unable to save operational details."
-                );
-
-                return;
-            }
-
-            document
-                .getElementById("tab5")
-                .click();
-        } catch (error) {
-            showError(error.message);
-        } finally {
-            setButtonLoading(
-                submitButton,
-                false
-            );
-        }
-    });
+const opsBtn = document.getElementById("btnOps");
+if (opsBtn && opsBtn.form !== operationalForm) {
+    opsBtn.addEventListener("click", handleOperationalSubmit);
+}
 
 /* =========================
    ABOUT
 ========================= */
 
-document
-    .getElementById("about")
-    .addEventListener("panelactive", async () => {
+const aboutPanel = document.getElementById("about");
+const aboutForm = aboutPanel ? aboutPanel.querySelector("form") : null;
+
+if (aboutPanel) {
+    aboutPanel.addEventListener("panelactive", async () => {
         try {
             const response = await apiFetch(
                 "/api/doctor/get-about",
@@ -1119,300 +912,214 @@ document
                 }
             );
 
-            const data =
-                await getResponseData(response);
+            const data = await getResponseData(response);
 
             if (!response.ok) {
-                showError(
-                    data.message ||
-                    "Unable to get profile details."
-                );
-
+                console.warn("No existing about details:", data.message);
                 return;
             }
 
-            document.getElementById(
-                "designation"
-            ).value =
-                data.designation || "";
+            const desEl = document.getElementById("designation");
+            const descEl = document.getElementById("desc");
 
-            document.getElementById(
-                "desc"
-            ).value =
-                data.about || "";
+            if (desEl) desEl.value = data.designation || "";
+            if (descEl) descEl.value = data.about || "";
 
-            /*
-             * File inputs cannot be populated using
-             * JavaScript. Display the existing photo
-             * through the image element instead.
-             */
-            if (data.photo) {
+            if (data.photo && profilePic) {
                 profilePic.src = data.photo;
             }
         } catch (error) {
-            showError(error.message);
+            console.warn("Failed to load about details:", error.message);
         }
     });
+}
 
-document
-    .getElementById("btnAbout")
-    .addEventListener("click", async (event) => {
-        event.preventDefault();
+const handleAboutSubmit = async (event) => {
+    event.preventDefault();
 
-        const submitButton = event.currentTarget;
-        const currentForm =
-            submitButton.closest("form");
+    const form = aboutForm || (event.currentTarget.closest ? event.currentTarget.closest("form") : null);
+    if (!form) return;
 
-        if (!currentForm.checkValidity()) {
-            currentForm.reportValidity();
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const submitButton = form.querySelector('[type="submit"]') || document.getElementById("btnAbout");
+
+    const desEl = document.getElementById("designation");
+    const descEl = document.getElementById("desc");
+    const pfpEl = document.getElementById("pfp");
+
+    const designation = desEl ? desEl.value.trim() : "";
+    const about = descEl ? descEl.value.trim() : "";
+    const profileFile = pfpEl ? pfpEl.files[0] : null;
+
+    const formData = new FormData();
+    formData.append("designation", designation);
+    formData.append("about", about);
+
+    if (profileFile) {
+        formData.append("photo", profileFile);
+    }
+
+    setButtonLoading(submitButton, true, "Saving...");
+    await waitForNextPaint();
+
+    try {
+        const response = await apiFetch(
+            "/api/doctor/set-about",
+            {
+                method: "PUT",
+                body: formData
+            }
+        );
+
+        const data = await getResponseData(response);
+
+        if (!response.ok) {
+            showError(
+                data.message ||
+                "Unable to save profile details."
+            );
             return;
         }
 
-        const designation =
-            document
-                .getElementById("designation")
-                .value.trim();
+        switchToTab("tab6");
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        setButtonLoading(submitButton, false);
+    }
+};
 
-        const about =
-            document
-                .getElementById("desc")
-                .value.trim();
+if (aboutForm) {
+    aboutForm.addEventListener("submit", handleAboutSubmit);
+}
 
-        const profileFile =
-            document
-                .getElementById("pfp")
-                .files[0];
-
-        const formData = new FormData();
-
-        formData.append(
-            "designation",
-            designation
-        );
-
-        formData.append(
-            "about",
-            about
-        );
-
-        if (profileFile) {
-            formData.append(
-                "photo",
-                profileFile
-            );
-        }
-
-        setButtonLoading(
-            submitButton,
-            true,
-            "Saving..."
-        );
-
-        await waitForNextPaint();
-
-        try {
-            const response = await apiFetch(
-                "/api/doctor/set-about",
-                {
-                    method: "PUT",
-                    body: formData
-                }
-            );
-
-            const data =
-                await getResponseData(response);
-
-            if (!response.ok) {
-                showError(
-                    data.message ||
-                    "Unable to save profile details."
-                );
-
-                return;
-            }
-
-            document
-                .getElementById("tab6")
-                .click();
-        } catch (error) {
-            showError(error.message);
-        } finally {
-            setButtonLoading(
-                submitButton,
-                false
-            );
-        }
-    });
+const aboutBtn = document.getElementById("btnAbout");
+if (aboutBtn && aboutBtn.form !== aboutForm) {
+    aboutBtn.addEventListener("click", handleAboutSubmit);
+}
 
 /* =========================
    VERIFICATION RECORDS
 ========================= */
 
-document
-    .getElementById("btnRecords")
-    .addEventListener("click", async (event) => {
-        event.preventDefault();
+const recordsPanel = document.getElementById("records");
+const recordsForm = recordsPanel ? (recordsPanel.querySelector("form") || document.getElementById("recordsForm")) : null;
 
-        try {
-            const response = await apiFetch("/api/doctor/profile-status");
+const handleRecordsSubmit = async (event) => {
+    event.preventDefault();
 
-            const data = await response.json();
-            if (data.data === true) {
-                window.location.href = "../doc-dashboard/home.html";
-            } else {
-                alert("You Are Not Yet Verified");
+    const form = recordsForm || (event.currentTarget.closest ? event.currentTarget.closest("form") : null);
+    if (!form) return;
+
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const submitButton = form.querySelector('[type="submit"]') || document.getElementById("btnRecords");
+
+    const governmentIdEl = document.getElementById("governmentId");
+    const medicalCertEl = document.getElementById("medicalCertificate");
+
+    const governmentId = governmentIdEl ? governmentIdEl.files[0] : null;
+    const medicalCertificate = medicalCertEl ? medicalCertEl.files[0] : null;
+
+    if (!governmentId || !medicalCertificate) {
+        showError("Please upload both documents.");
+        return;
+    }
+
+    const medicalCertForm = new FormData();
+    medicalCertForm.append("document", medicalCertificate);
+    medicalCertForm.append("title", "Medical Certificate");
+    medicalCertForm.append("isPublic", "true");
+
+    const governmentIdForm = new FormData();
+    governmentIdForm.append("document", governmentId);
+    governmentIdForm.append("title", "Government ID");
+    governmentIdForm.append("isPublic", "true");
+
+    setButtonLoading(submitButton, true, "Uploading...");
+    await waitForNextPaint();
+
+    try {
+        /*
+         * Upload the medical certificate.
+         */
+        const medicalResponse = await apiFetch(
+            "/api/doctor/upload-document",
+            {
+                method: "POST",
+                body: medicalCertForm
             }
-        } catch (error) {
-            showError(error);
-        }
+        );
 
-        const submitButton = event.currentTarget;
-        const currentForm =
-            submitButton.closest("form");
+        const medicalData = await getResponseData(medicalResponse);
 
-        if (!currentForm.checkValidity()) {
-            currentForm.reportValidity();
-            return;
-        }
-
-        const governmentId =
-            document
-                .getElementById("governmentId")
-                .files[0];
-
-        const medicalCertificate =
-            document
-                .getElementById(
-                    "medicalCertificate"
-                )
-                .files[0];
-
-        if (
-            !governmentId ||
-            !medicalCertificate
-        ) {
+        if (!medicalResponse.ok) {
             showError(
-                "Please upload both documents."
+                medicalData.message ||
+                "Unable to upload medical certificate."
             );
-
             return;
         }
 
-        const medicalCertForm =
-            new FormData();
-
-        medicalCertForm.append(
-            "document",
-            medicalCertificate
-        );
-
-        medicalCertForm.append(
-            "title",
-            "Medical Certificate"
-        );
-
-        medicalCertForm.append(
-            "isPublic",
-            "true"
-        );
-
-        const governmentIdForm =
-            new FormData();
-
-        governmentIdForm.append(
-            "document",
-            governmentId
-        );
-
-        governmentIdForm.append(
-            "title",
-            "Government ID"
-        );
-
-        governmentIdForm.append(
-            "isPublic",
-            "true"
-        );
-
-        setButtonLoading(
-            submitButton,
-            true,
-            "Uploading..."
-        );
-
-        await waitForNextPaint();
-
-        try {
-            /*
-             * Upload the medical certificate.
-             */
-            const medicalResponse = await apiFetch(
-                "/api/doctor/upload-document",
-                {
-                    method: "POST",
-                    body: medicalCertForm
-                }
-            );
-
-            const medicalData =
-                await getResponseData(
-                    medicalResponse
-                );
-
-            if (!medicalResponse.ok) {
-                showError(
-                    medicalData.message ||
-                    "Unable to upload medical certificate."
-                );
-
-                return;
+        /*
+         * Upload the government ID.
+         */
+        const governmentResponse = await apiFetch(
+            "/api/doctor/upload-document",
+            {
+                method: "POST",
+                body: governmentIdForm
             }
+        );
 
-            /*
-             * Upload the government ID.
-             */
-            const governmentResponse =
-                await apiFetch(
-                    "/api/doctor/upload-document",
-                    {
-                        method: "POST",
-                        body: governmentIdForm
-                    }
-                );
+        const governmentData = await getResponseData(governmentResponse);
 
-            const governmentData =
-                await getResponseData(
-                    governmentResponse
-                );
-
-            if (!governmentResponse.ok) {
-                showError(
-                    governmentData.message ||
-                    "Unable to upload government ID."
-                );
-
-                return;
-            }
-
-            alert(
+        if (!governmentResponse.ok) {
+            showError(
                 governmentData.message ||
-                medicalData.message ||
-                "Documents uploaded successfully. Please wait while your credentials are verified."
+                "Unable to upload government ID."
             );
-        } catch (error) {
-            showError(error.message);
-        } finally {
-            setButtonLoading(
-                submitButton,
-                false
-            );
+            return;
         }
-    });
+
+        alert(
+            "Documents uploaded successfully! Your details have been submitted for verification."
+        );
+
+        window.location.href = "../doc-dashboard/home.html";
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        setButtonLoading(submitButton, false);
+    }
+};
+
+if (recordsForm) {
+    recordsForm.addEventListener("submit", handleRecordsSubmit);
+}
+
+const recordsBtn = document.getElementById("btnRecords");
+if (recordsBtn && recordsBtn.form !== recordsForm) {
+    recordsBtn.addEventListener("click", handleRecordsSubmit);
+}
+
+/* =========================
+   INITIALIZATION
+========================= */
 
 /*
- * Show the first panel only after all panelactive
+ * Show the initial panel only after all panelactive
  * event listeners have been registered.
  */
 if (tabPanels.length > 0) {
-    showPanel(tabPanels[0]);
-}
+    const hash = window.location.hash;
+    const initialPanel = (hash && document.querySelector(hash)) || tabPanels[0];
+    showPanel(initialPanel);
+}

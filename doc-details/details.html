@@ -19,9 +19,9 @@
     </div>
 
     <div class="tabs__panel flow">
-        <div id="location" aria-labelledby="tab-1">
+        <div id="location" aria-labelledby="tab1">
             <div class="card">
-                <form>
+                <form id="locationForm">
                     <div>
                         <label for="city">City : <input type="text" id="city" name="city" placeholder="Enter City" required></label>
                         <label for="state">State : <input type="text" id="state" name="state" placeholder="Enter State" required></label>
@@ -33,7 +33,7 @@
                     </div>
                     <br>
                     <div>
-                        <label for="PIN">PIN : <input type="number" id="PIN" name="PIN" placeholder="Enter PIN" requPIN></label>
+                        <label for="PIN">PIN : <input type="number" id="PIN" name="PIN" placeholder="Enter PIN" required></label>
                         <label for="facility">Facility Name : <input class="right" type="text" id="facility" name="facility" placeholder="Enter Facility Name" required></label>
                     </div>
                     <br>
@@ -44,9 +44,9 @@
                 </form>
             </div>
         </div>
-        <div id="education" aria-labelledby="tab-2">
+        <div id="education" aria-labelledby="tab2">
             <div class="card">
-                <form>
+                <form id="educationForm">
                     <div><label for="institute">Institute : <input type="text" id="institute" name="institute" placeholder="Enter Institute Name" required></label></div>
                     <br>
                     <div>
@@ -56,7 +56,7 @@
                     <br>
                     <div>
                         <label for="feildOfStudy">Feild of Study : <input type="text" id="feildOfStudy" name="feildOfStudy" placeholder="Enter Feild of Study" required></label>
-                        <label for="s1">Specialization 1 : <input type="text" id="s1" name="s1" placeholder="Enter Specialization 1" requPIN></label>
+                        <label for="s1">Specialization 1 : <input type="text" id="s1" name="s1" placeholder="Enter Specialization 1" required></label>
                     </div>
                     <br>
                     <div>
@@ -68,9 +68,9 @@
                 </form>
             </div>
         </div>
-        <div id="experiance" aria-labelledby="tab-3">
+        <div id="experiance" aria-labelledby="tab3">
             <div class="card">
-                <form>
+                <form id="experienceForm">
                     <div>
                         <label for="exp_facility_1">Facility Name : <input type="text" id="exp_facility_1" name="exp_facility_1" placeholder="Enter Facility Name" required></label>
                         <label for="exp_designation_1">Designation : <input type="text" id="exp_designation_1" name="exp_designation_1" placeholder="Enter Designation" required></label>
@@ -88,9 +88,9 @@
                 </form>
             </div>
         </div>
-        <div id="operational" aria-labelledby="tab-4">
+        <div id="operational" aria-labelledby="tab4">
             <div class="card">
-                <form>
+                <form id="operationalForm">
                     <div>
                         <label for="m_cap">
                             Morning Capacity :
@@ -134,9 +134,9 @@
                 </form>
             </div>
         </div>
-        <div id="about" aria-labelledby="tab-4">
+        <div id="about" aria-labelledby="tab5">
             <div class="card">
-                <form>
+                <form id="aboutForm">
                     <div>
                         <img src="../media/doc-profile.jpg" alt="Profile">
 
@@ -186,7 +186,7 @@
             <div class="card">
                 <form id="recordsForm">
                     <div>
-                        <label for="govtId">
+                        <label for="governmentId">
                             Government ID :
                             <input
                                 type="file"
@@ -217,6 +217,7 @@
                 </form>
             </div>
         </div>
+    </div>
     <script type="module" src="detailsAction.js"></script>
 </body>
 </html>
